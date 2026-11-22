@@ -1,0 +1,2710 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUMAS DIGITAL HUB | Kantor Wilayah Direktorat Jenderal Imigrasi Papua</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#061529',
+                            900: '#0A2342',
+                            800: '#0D2B52',
+                            700: '#143D73',
+                            600: '#1D5296',
+                        },
+                        gold: {
+                            400: '#E5C158',
+                            500: '#D4AF37',
+                            600: '#B59224',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Plus Jakarta Sans', sans-serif; }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+        }
+        .fade-in {
+            animation: fadeIn 0.25s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-navy-800 selection:text-white">
+
+    <!-- GLOBAL TOAST / NOTIFICATION CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- CUSTOM CONFIRMATION / DIALOG MODAL (No native alert/confirm) -->
+    <div id="confirm-modal" class="fixed inset-0 z-[90] hidden items-center justify-center bg-navy-950/70 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 fade-in">
+            <div class="flex items-start gap-4">
+                <div id="confirm-icon-box" class="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                    <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 id="confirm-title" class="text-lg font-bold text-navy-900">Konfirmasi Tindakan</h3>
+                    <p id="confirm-message" class="text-sm text-slate-600 mt-1.5 leading-relaxed">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-slate-100">
+                <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">Batal</button>
+                <button id="confirm-ok-btn" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-navy-800 hover:bg-navy-900 shadow-sm transition">Ya, Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- 1. PORTAL AUTENTIKASI & MANAJEMEN AKUN GOOGLE (LOGIN / REGISTER)      -->
+    <!-- ===================================================================== -->
+    <section id="auth-portal" class="min-h-screen flex flex-col bg-gradient-to-br from-navy-950 via-navy-900 to-navy-800 text-white relative overflow-x-hidden">
+        <!-- Decorative Background Pattern -->
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#D4AF37 1px, transparent 1px); background-size: 28px 28px;"></div>
+
+        <!-- Top Institutional Header -->
+        <header class="relative z-10 border-b border-white/10 bg-navy-950/60 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3.5">
+                    <!-- Dual Official Logos Container -->
+                    <div class="flex items-center gap-2.5 bg-white/10 p-2 rounded-2xl border border-white/15 shadow-inner" id="portal-logos"></div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h1 class="font-display font-extrabold text-lg sm:text-xl tracking-wide text-white">HUMAS DIGITAL HUB</h1>
+                            <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-gold-500/20 text-gold-400 border border-gold-500/40 rounded-full">PORTAL INTERNAL</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-slate-300 font-medium tracking-wide">KANTOR WILAYAH DIREKTORAT JENDERAL IMIGRASI PAPUA</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-300 bg-white/5 px-3.5 py-2 rounded-xl border border-white/10">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Sistem Terintegrasi Google Drive &bull; Jayapura, Papua</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Portal Body -->
+        <main class="relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            <!-- Left Column: Saved & Connected Google Accounts -->
+            <div class="lg:col-span-6 space-y-6">
+                <div class="space-y-2">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gold-400">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i> Akses Single Sign-On & Google Drive
+                    </span>
+                    <h2 class="font-display text-2xl sm:text-3xl font-bold text-white leading-tight">
+                        Pusat Kendali Arsip Digital & Pemantauan Media Kehumasan
+                    </h2>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Silakan pilih akun Google yang sudah terdaftar dan terhubung di bawah ini untuk masuk secara instan, atau masuk/daftarkan akun email pribadi maupun dinas (<span class="text-gold-400 font-medium">@imigrasi.go.id</span> / <span class="text-gold-400 font-medium">@gmail.com</span>).
+                    </p>
+                </div>
+
+                <!-- Saved Accounts Card List -->
+                <div class="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-5 shadow-xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-sm">
+                                <!-- Google G Icon -->
+                                <svg class="w-4 h-4" viewBox="0 0 24 24">
+                                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
+                                    <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
+                                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm text-white">Akun Google Terdaftar & Terhubung</h3>
+                                <p class="text-[11px] text-slate-300">Klik akun untuk masuk atau kelola koneksi Google Drive</p>
+                            </div>
+                        </div>
+                        <span id="saved-accounts-count" class="text-xs font-bold px-2.5 py-1 rounded-full bg-navy-950/60 text-gold-400 border border-gold-500/30">0 Akun</span>
+                    </div>
+
+                    <div id="portal-saved-accounts-list" class="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
+                        <!-- Rendered dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Login & Registration Form Card -->
+            <div class="lg:col-span-6">
+                <div class="bg-white text-slate-800 rounded-2xl shadow-2xl border border-slate-200 overflow-hidden">
+                    <!-- Tab Switcher: Masuk vs Daftar Akun Baru -->
+                    <div class="grid grid-cols-2 bg-slate-100 p-1.5 border-b border-slate-200">
+                        <button type="button" id="tab-login-btn" onclick="switchAuthTab('login')" class="py-2.5 px-4 rounded-xl text-sm font-bold transition bg-white text-navy-900 shadow-sm flex items-center justify-center gap-2">
+                            <i data-lucide="log-in" class="w-4 h-4 text-navy-700"></i> Masuk Portal
+                        </button>
+                        <button type="button" id="tab-register-btn" onclick="switchAuthTab('register')" class="py-2.5 px-4 rounded-xl text-sm font-semibold transition text-slate-600 hover:text-navy-900 flex items-center justify-center gap-2">
+                            <i data-lucide="user-plus" class="w-4 h-4"></i> Daftar Akun Baru
+                        </button>
+                    </div>
+
+                    <!-- LOGIN FORM -->
+                    <form id="login-form" onsubmit="handleLoginSubmit(event)" class="p-6 sm:p-8 space-y-5">
+                        <div>
+                            <h3 class="text-xl font-bold text-navy-900">Masuk ke HUMAS DIGITAL HUB</h3>
+                            <p class="text-xs text-slate-500 mt-1">Gunakan email Google pribadi atau email resmi kantor beserta kata sandi Google/Portal Anda.</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">Alamat Email Google / Kantor <span class="text-red-500">*</span></label>
+                                <div class="relative">
+                                    <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                                    <input type="email" id="login-email" required placeholder="nama@imigrasi.go.id atau nama@gmail.com"
+                                        class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-navy-700 focus:border-navy-700 transition">
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex items-center justify-between mb-1.5">
+                                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700">Kata Sandi Google / Portal <span class="text-red-500">*</span></label>
+                                    <span class="text-[11px] text-navy-700 font-medium">Terenkripsi Lokal</span>
+                                </div>
+                                <div class="relative">
+                                    <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                                    <input type="password" id="login-password" required placeholder="Masukkan kata sandi akun Anda"
+                                        class="w-full pl-10 pr-11 py-3 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-navy-700 focus:border-navy-700 transition">
+                                    <button type="button" onclick="togglePasswordVisibility('login-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+                                        <i data-lucide="eye" class="w-4 h-4"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-between pt-1">
+                                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                                    <input type="checkbox" id="login-connect-drive" checked class="w-4 h-4 rounded border-slate-300 text-navy-800 focus:ring-navy-700">
+                                    <span class="text-xs font-medium text-slate-700">Hubungkan & Sinkronkan Google Drive Otomatis</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white font-bold text-sm shadow-lg shadow-navy-900/20 transition flex items-center justify-center gap-2">
+                            <span>Masuk & Hubungkan Google Drive</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+
+                        <div class="pt-3 border-t border-slate-100 text-center">
+                            <p class="text-xs text-slate-500">
+                                Belum memiliki akun terdaftar di portal ini?
+                                <button type="button" onclick="switchAuthTab('register')" class="text-navy-800 font-bold hover:underline ml-1">Daftar Sekarang</button>
+                            </p>
+                        </div>
+                    </form>
+
+                    <!-- REGISTER FORM -->
+                    <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="hidden p-6 sm:p-8 space-y-4">
+                        <div>
+                            <h3 class="text-xl font-bold text-navy-900">Pendaftaran Akun Personel Humas</h3>
+                            <p class="text-xs text-slate-500 mt-1">Daftarkan akun email baru dan tautkan ke ruang penyimpanan Google Drive.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap & Gelar <span class="text-red-500">*</span></label>
+                                <input type="text" id="reg-name" required placeholder="Contoh: Daniel Pratama, S.Kom."
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-navy-700">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">NIP / Jabatan Humas <span class="text-red-500">*</span></label>
+                                <input type="text" id="reg-role" required placeholder="Analis Keimigrasian / Humas"
+                                    class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-navy-700">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Email Google (Pribadi / Kantor) <span class="text-red-500">*</span></label>
+                            <input type="email" id="reg-email" required placeholder="humas.papua@imigrasi.go.id atau nama@gmail.com"
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-navy-700">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kata Sandi Google / Portal <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input type="password" id="reg-password" required minlength="4" placeholder="Buat kata sandi minimal 4 karakter"
+                                    class="w-full px-3.5 pr-10 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-navy-700">
+                                <button type="button" onclick="togglePasswordVisibility('reg-password', this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Tautan Root Folder Google Drive (Opsional)</label>
+                            <input type="url" id="reg-drive-url" placeholder="https://drive.google.com/drive/folders/..."
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-navy-700">
+                            <p class="text-[11px] text-slate-400 mt-1">Kosongkan untuk menggunakan tautan root Google Drive default Kanwil Papua.</p>
+                        </div>
+
+                        <button type="submit" class="w-full py-3.5 px-5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white font-bold text-sm shadow-lg transition flex items-center justify-center gap-2">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-gold-400"></i>
+                            <span>Daftarkan Akun & Masuk ke Dashboard</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="relative z-10 border-t border-white/10 py-4 text-center text-xs text-slate-400">
+            HUMAS DIGITAL HUB &bull; Kantor Wilayah Direktorat Jenderal Imigrasi Papua &bull; Kementerian Imigrasi dan Pemasyarakatan RI
+        </footer>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- 2. MAIN APPLICATION SHELL (DASHBOARD, ARCHIVE, MONITORING, TOOLS)     -->
+    <!-- ===================================================================== -->
+    <div id="main-app" class="hidden min-h-screen flex flex-col">
+
+        <!-- TOP NAVBAR (Dark Navy #0A2342 & White & Gold) -->
+        <header class="sticky top-0 z-40 bg-navy-900 text-white shadow-lg border-b border-navy-700">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16 sm:h-20 gap-3">
+                    <!-- Brand & Official Logos -->
+                    <div class="flex items-center gap-3 min-w-0">
+                        <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-xl text-slate-200 hover:bg-navy-800">
+                            <i data-lucide="menu" class="w-5 h-5"></i>
+                        </button>
+                        <div id="navbar-logos" class="flex items-center gap-2 shrink-0"></div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="font-display font-extrabold text-sm sm:text-lg tracking-wide text-white truncate">HUMAS DIGITAL HUB</span>
+                                <span class="hidden md:inline-block px-2 py-0.5 text-[10px] font-bold bg-gold-500 text-navy-950 rounded-md uppercase tracking-wider">PORTAL INTERNAL</span>
+                            </div>
+                            <p class="text-[10px] sm:text-xs text-slate-300 font-medium truncate">KANTOR WILAYAH DIREKTORAT JENDERAL IMIGRASI PAPUA</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Actions: Google Drive Connection Status & Active User Profile -->
+                    <div class="flex items-center gap-2.5 sm:gap-4">
+                        <!-- Google Drive Status Pill -->
+                        <button onclick="openAccountManagerModal()" title="Kelola Koneksi Akun Google Drive"
+                            class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-navy-800 hover:bg-navy-700 border border-white/15 transition text-left">
+                            <span id="nav-drive-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                            <div class="leading-tight">
+                                <p id="nav-drive-status-text" class="text-[11px] font-bold text-emerald-300">Google Drive Terhubung</p>
+                                <p id="nav-drive-email" class="text-[10px] text-slate-300 max-w-[160px] truncate">humas@imigrasi.go.id</p>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400"></i>
+                        </button>
+
+                        <!-- Account Switcher / Profile Button -->
+                        <button onclick="openAccountManagerModal()" class="flex items-center gap-2.5 bg-white/10 hover:bg-white/15 pl-2.5 pr-3 py-1.5 rounded-xl border border-white/15 transition">
+                            <div id="nav-user-avatar" class="w-8 h-8 rounded-lg bg-gold-500 text-navy-950 font-bold text-xs flex items-center justify-center uppercase">
+                                HD
+                            </div>
+                            <div class="hidden md:block text-left leading-tight">
+                                <p id="nav-user-name" class="text-xs font-bold text-white max-w-[130px] truncate">Admin Humas</p>
+                                <p id="nav-user-role" class="text-[10px] text-gold-400 max-w-[130px] truncate">Humas Kanwil Papua</p>
+                            </div>
+                        </button>
+
+                        <!-- Logout / Switch Portal Button -->
+                        <button onclick="logoutToPortal()" title="Keluar ke Portal Login" class="p-2.5 rounded-xl bg-red-500/15 hover:bg-red-500/25 text-red-200 border border-red-400/20 transition">
+                            <i data-lucide="log-out" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- BODY CONTAINER: SIDEBAR + CONTENT -->
+        <div class="flex-1 flex max-w-[1440px] w-full mx-auto">
+            
+            <!-- MOBILE SIDEBAR BACKDROP -->
+            <div id="mobile-sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-navy-950/60 z-30 hidden lg:hidden"></div>
+
+            <!-- SIDEBAR NAVIGATION -->
+            <aside id="app-sidebar" class="fixed lg:static inset-y-0 left-0 z-30 w-68 bg-white border-r border-slate-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 flex flex-col justify-between pt-20 lg:pt-6 pb-6 px-4 shrink-0">
+                <div class="space-y-6">
+                    <!-- Main Navigation -->
+                    <div>
+                        <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Menu Utama</p>
+                        <nav class="space-y-1">
+                            <button onclick="navigateTo('dashboard')" data-nav="dashboard" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                                <span>Dashboard Utama</span>
+                            </button>
+                            <button onclick="navigateTo('archive')" data-nav="archive" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+                                <i data-lucide="folder-kanban" class="w-4 h-4"></i>
+                                <span>Digital Archive</span>
+                                <span class="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-navy-100 text-navy-800">Drive</span>
+                            </button>
+                            <button onclick="navigateTo('monitoring')" data-nav="monitoring" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+                                <i data-lucide="newspaper" class="w-4 h-4"></i>
+                                <span>Media Monitoring</span>
+                            </button>
+                        </nav>
+                    </div>
+
+                    <!-- Humas Support Tools -->
+                    <div>
+                        <p class="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Perangkat Humas</p>
+                        <nav class="space-y-1">
+                            <button onclick="navigateTo('calendar')" data-nav="calendar" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+                                <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                                <span>Kalender Publikasi</span>
+                            </button>
+                            <button onclick="navigateTo('press')" data-nav="press" class="nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition">
+                                <i data-lucide="file-signature" class="w-4 h-4"></i>
+                                <span>Generator Siaran Pers</span>
+                            </button>
+                            <button onclick="openAccountManagerModal()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition">
+                                <i data-lucide="users-round" class="w-4 h-4 text-navy-700"></i>
+                                <span>Akun & Google Drive</span>
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Google Drive Storage Card in Sidebar -->
+                <div class="mt-8 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="hard-drive" class="w-4 h-4 text-navy-800"></i>
+                            <span class="text-xs font-bold text-navy-900">Penyimpanan Drive</span>
+                        </div>
+                        <span id="sidebar-drive-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Aktif</span>
+                    </div>
+                    <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden mb-2">
+                        <div id="sidebar-storage-bar" class="bg-navy-800 h-2 rounded-full transition-all duration-500" style="width: 34%"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] text-slate-500">
+                        <span id="sidebar-storage-text">10.2 GB / 30 GB</span>
+                        <span id="sidebar-file-count" class="font-semibold text-navy-800">0 File</span>
+                    </div>
+                    <button onclick="openRootGoogleDrive()" class="mt-3 w-full py-2 px-3 rounded-xl bg-white hover:bg-slate-100 border border-slate-300 text-xs font-bold text-navy-900 flex items-center justify-center gap-1.5 transition shadow-xs">
+                        <i data-lucide="external-link" class="w-3.5 h-3.5 text-navy-700"></i>
+                        <span>Buka Google Drive</span>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
+
+                <!-- ========================================================= -->
+                <!-- VIEW 1: DASHBOARD UTAMA                                   -->
+                <!-- ========================================================= -->
+                <div id="view-dashboard" class="space-y-6 fade-in">
+                    <!-- Welcome Banner -->
+                    <div class="bg-gradient-to-r from-navy-900 via-navy-800 to-navy-700 rounded-2xl p-6 sm:p-7 text-white shadow-lg relative overflow-hidden">
+                        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div>
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-xs font-semibold text-gold-400 mb-2">
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                                    <span id="dash-greeting-date">Kamis, 12 November 2026</span>
+                                </div>
+                                <h2 class="font-display text-xl sm:text-2xl font-bold">Selamat Datang, <span id="dash-user-name">Admin Humas</span></h2>
+                                <p class="text-xs sm:text-sm text-slate-200 mt-1 max-w-2xl">
+                                    Kelola arsip dokumentasi kegiatan pimpinan, operasional keimigrasian, publikasi media sosial, dan pemantauan pemberitaan Kanwil Ditjen Imigrasi Papua dalam satu pintu terintegrasi Google Drive.
+                                </p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+                                <button onclick="jumpToCurrentMonthArchive()" class="px-4 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2">
+                                    <i data-lucide="folder-open" class="w-4 h-4"></i>
+                                    <span>Arsip Bulan Ini (November)</span>
+                                </button>
+                                <button onclick="navigateTo('monitoring'); openMonitoringModal();" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs sm:text-sm border border-white/20 transition flex items-center gap-2">
+                                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                                    <span>Catat Berita</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Metrics Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Total Dokumen Arsip</span>
+                                <div class="w-10 h-10 rounded-xl bg-navy-900/10 text-navy-800 flex items-center justify-center">
+                                    <i data-lucide="files" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <p id="kpi-total-files" class="font-display text-3xl font-extrabold text-navy-900 mt-3">0</p>
+                            <p class="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+                                <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Tersinkronisasi ke Google Drive
+                            </p>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Folder & Subfolder Aktif</span>
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-700 flex items-center justify-center">
+                                    <i data-lucide="folder-tree" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <p id="kpi-total-folders" class="font-display text-3xl font-extrabold text-navy-900 mt-3">0</p>
+                            <p class="text-xs text-slate-500 font-medium mt-1">7 Kategori Utama &times; 12 Bulan</p>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Laporan Media Monitoring</span>
+                                <div class="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-700 flex items-center justify-center">
+                                    <i data-lucide="radio" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <p id="kpi-total-news" class="font-display text-3xl font-extrabold text-navy-900 mt-3">0</p>
+                            <div id="kpi-sentiment-mini" class="flex items-center gap-2 text-xs font-semibold mt-1">
+                                <span class="text-emerald-600">0 Positif</span> &bull;
+                                <span class="text-slate-600">0 Netral</span> &bull;
+                                <span class="text-rose-600">0 Negatif</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Koneksi Akun Google</span>
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center">
+                                    <i data-lucide="cloud-check" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                            <p id="kpi-drive-status" class="font-display text-lg font-extrabold text-emerald-700 mt-3 truncate">Terhubung & Aktif</p>
+                            <p id="kpi-drive-account" class="text-xs text-slate-500 font-medium mt-1 truncate">humas@imigrasi.go.id</p>
+                        </div>
+                    </div>
+
+                    <!-- Charts & Analytics Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Monthly Archive Bar Chart -->
+                        <div class="lg:col-span-7 bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="font-bold text-base text-navy-900">Distribusi Arsip Digital per Bulan (2026)</h3>
+                                    <p class="text-xs text-slate-500">Jumlah dokumen & dokumentasi terunggah pada setiap folder bulan</p>
+                                </div>
+                                <button onclick="navigateTo('archive')" class="text-xs font-bold text-navy-800 hover:underline">Lihat Semua &rarr;</button>
+                            </div>
+                            <div id="monthly-chart-container" class="h-52 flex items-end gap-2 pt-6 pb-2 px-1 border-b border-slate-100">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Sentiment & Category Summary -->
+                        <div class="lg:col-span-5 bg-white rounded-2xl p-6 border border-slate-200 shadow-xs flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-base text-navy-900">Analisis Sentimen Pemberitaan</h3>
+                                <p class="text-xs text-slate-500 mb-4">Rekapitulasi pemberitaan keimigrasian wilayah Papua</p>
+                                <div id="sentiment-bars-container" class="space-y-4">
+                                    <!-- Rendered via JS -->
+                                </div>
+                            </div>
+                            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                                <span class="text-xs text-slate-500">Pemantauan aktif media lokal & nasional</span>
+                                <button onclick="navigateTo('monitoring')" class="text-xs font-bold text-navy-800 hover:underline">Buka Monitoring &rarr;</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activities Row -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Recent Uploaded Files -->
+                        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-base text-navy-900">Unggahan Arsip Terbaru</h3>
+                                <button onclick="navigateTo('archive')" class="text-xs font-bold text-navy-800 hover:underline">Ke Digital Archive</button>
+                            </div>
+                            <div id="dash-recent-files" class="divide-y divide-slate-100">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+
+                        <!-- Recent Media Monitoring -->
+                        <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-base text-navy-900">Log Pemberitaan Terbaru</h3>
+                                <button onclick="navigateTo('monitoring')" class="text-xs font-bold text-navy-800 hover:underline">Ke Media Monitoring</button>
+                            </div>
+                            <div id="dash-recent-news" class="divide-y divide-slate-100">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- VIEW 2: DIGITAL ARCHIVE (GOOGLE DRIVE INTEGRATED EXPLORER)-->
+                <!-- ========================================================= -->
+                <div id="view-archive" class="hidden space-y-5 fade-in">
+                    <!-- Header & Google Drive Sync Toolbar -->
+                    <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-xs">
+                        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h2 class="font-display text-xl sm:text-2xl font-extrabold text-navy-900">Digital Archive</h2>
+                                    <span id="archive-drive-pill" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                        Terhubung ke Google Drive (<span id="archive-active-email">humas@imigrasi.go.id</span>)
+                                    </span>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                                    Penyimpanan arsip kehumasan terstruktur per Tahun, Bulan, 7 Kategori Utama, dan Subfolder Google Drive.
+                                </p>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-2.5">
+                                <button onclick="openDriveLinkConfigModal()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5">
+                                    <i data-lucide="link" class="w-4 h-4 text-navy-700"></i>
+                                    <span>Tautkan Link Drive Folder Ini</span>
+                                </button>
+                                <button onclick="openCurrentFolderInDrive()" class="px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-navy-900 border border-slate-300 text-xs font-bold transition flex items-center gap-1.5 shadow-xs">
+                                    <i data-lucide="external-link" class="w-4 h-4 text-emerald-600"></i>
+                                    <span>Buka di Google Drive</span>
+                                </button>
+                                <button id="btn-add-subfolder" onclick="openNewSubfolderModal()" class="px-3.5 py-2.5 rounded-xl bg-navy-800 hover:bg-navy-900 text-white text-xs font-bold transition flex items-center gap-1.5">
+                                    <i data-lucide="folder-plus" class="w-4 h-4 text-gold-400"></i>
+                                    <span>+ Folder / Subfolder</span>
+                                </button>
+                                <button onclick="openUploadFileModal()" class="px-4 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-400 text-navy-950 text-xs font-extrabold transition flex items-center gap-1.5 shadow-sm">
+                                    <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                                    <span>+ Unggah File ke Folder Ini</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Breadcrumb & Search/Filter Bar (Google Drive Style) -->
+                        <div class="mt-5 pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <!-- Breadcrumb Path -->
+                            <nav id="archive-breadcrumb" class="flex items-center flex-wrap gap-1.5 text-sm font-semibold text-slate-600">
+                                <!-- Rendered via JS -->
+                            </nav>
+
+                            <!-- Search & Type Filter -->
+                            <div class="flex flex-wrap items-center gap-2">
+                                <div class="relative">
+                                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                    <input type="text" id="archive-search-input" oninput="renderArchiveExplorer()" placeholder="Telusuri folder atau file..."
+                                        class="pl-9 pr-3 py-2 rounded-xl border border-slate-300 text-xs w-48 sm:w-60 focus:outline-none focus:ring-2 focus:ring-navy-700">
+                                </div>
+                                <select id="archive-type-filter" onchange="renderArchiveExplorer()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-navy-700">
+                                    <option value="all">Semua Jenis File</option>
+                                    <option value="image">Foto / Gambar</option>
+                                    <option value="video">Video / Reels</option>
+                                    <option value="document">Dokumen / PDF</option>
+                                    <option value="design">Desain Grafis</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Storage Alert Banner (Matching Reference Drive Aesthetic) -->
+                    <div class="bg-amber-50/90 border border-amber-200 rounded-2xl px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-amber-900">
+                        <div class="flex items-center gap-2.5">
+                            <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0"></i>
+                            <span>
+                                Setiap folder dan subfolder di bawah ini terhubung langsung ke akun Google Drive <strong id="banner-drive-email">humas@imigrasi.go.id</strong>. File yang Anda unggah otomatis tercatat dan dapat diakses kembali.
+                            </span>
+                        </div>
+                        <span id="current-drive-url-badge" class="font-mono text-[11px] bg-white px-2.5 py-1 rounded-lg border border-amber-200 text-slate-600 truncate max-w-xs">
+                            drive.google.com/drive/folders/...
+                        </span>
+                    </div>
+
+                    <!-- Explorer Content Container (Folders Grid/Table + Files List) -->
+                    <div id="archive-explorer-body" class="space-y-6">
+                        <!-- Rendered dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- VIEW 3: MEDIA MONITORING (SESUAI REFERENSI GAMBAR 1)      -->
+                <!-- ========================================================= -->
+                <div id="view-monitoring" class="hidden space-y-5 fade-in">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div>
+                                <h2 class="font-display text-2xl font-extrabold text-navy-900">Media Monitoring</h2>
+                                <p class="text-sm text-slate-500 mt-0.5">Pencatatan pemberitaan, isu, dan percakapan publik terkait keimigrasian di Papua</p>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-2.5">
+                                <button onclick="exportMonitoringCSV()" class="px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5">
+                                    <i data-lucide="download" class="w-4 h-4"></i>
+                                    <span>Ekspor CSV</span>
+                                </button>
+                                <button onclick="openMonitoringModal()" class="px-4 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs sm:text-sm font-bold shadow-md transition flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4 text-gold-400"></i>
+                                    <span>+ Catat Pemberitaan</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Search & Sentiment Filter Bar (Matching Reference Photo 1) -->
+                        <div class="mt-6 flex flex-col md:flex-row items-stretch md:items-center gap-3">
+                            <div class="relative flex-1">
+                                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" id="monitoring-search" oninput="renderMediaMonitoring()" placeholder="Cari judul berita, media, atau kata kunci..."
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-navy-700">
+                            </div>
+                            <select id="monitoring-sentiment-filter" onchange="renderMediaMonitoring()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-navy-700">
+                                <option value="all">Semua sentimen</option>
+                                <option value="Positif">Positif</option>
+                                <option value="Netral">Netral</option>
+                                <option value="Negatif">Negatif</option>
+                            </select>
+                            <select id="monitoring-followup-filter" onchange="renderMediaMonitoring()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-700 bg-white focus:outline-none focus:ring-2 focus:ring-navy-700">
+                                <option value="all">Semua tindak lanjut</option>
+                                <option value="Pemantauan">Pemantauan</option>
+                                <option value="Arsip berita">Arsip berita</option>
+                                <option value="Koordinasi internal">Koordinasi internal</option>
+                                <option value="Klarifikasi / Hak Jawab">Klarifikasi / Hak Jawab</option>
+                            </select>
+                        </div>
+
+                        <!-- News Monitoring Table -->
+                        <div class="mt-6 overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-600">
+                                        <th class="py-3.5 px-4">Judul / Isu</th>
+                                        <th class="py-3.5 px-4">Sumber Media</th>
+                                        <th class="py-3.5 px-4">Tanggal</th>
+                                        <th class="py-3.5 px-4">Sentimen</th>
+                                        <th class="py-3.5 px-4">Tindak Lanjut</th>
+                                        <th class="py-3.5 px-4 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monitoring-table-body" class="divide-y divide-slate-100 text-sm">
+                                    <!-- Rendered via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footnote matching reference image -->
+                        <div class="mt-4 bg-slate-50 border border-slate-200/80 rounded-xl px-4 py-3 text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <span>Pencatatan dan evaluasi pemberitaan media lokal & nasional oleh Tim Humas Kantor Wilayah Direktorat Jenderal Imigrasi Papua.</span>
+                            <span id="monitoring-count-label" class="font-bold text-navy-800">Menampilkan 0 pemberitaan</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- VIEW 4: KALENDER AGENDA & PUBLIKASI HUMAS                 -->
+                <!-- ========================================================= -->
+                <div id="view-calendar" class="hidden space-y-5 fade-in">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                            <div>
+                                <h2 class="font-display text-2xl font-extrabold text-navy-900">Kalender Agenda & Publikasi Humas</h2>
+                                <p class="text-sm text-slate-500">Jadwal peliputan pimpinan, rilis berita, dan publikasi media sosial Kanwil Papua</p>
+                            </div>
+                            <button onclick="openAgendaModal()" class="px-4 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs sm:text-sm font-bold flex items-center gap-2">
+                                <i data-lucide="calendar-plus" class="w-4 h-4 text-gold-400"></i>
+                                <span>+ Tambah Jadwal Publikasi</span>
+                            </button>
+                        </div>
+                        <div id="agenda-list-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- VIEW 5: GENERATOR SIARAN PERS CEPAT                       -->
+                <!-- ========================================================= -->
+                <div id="view-press" class="hidden space-y-5 fade-in">
+                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs">
+                        <div class="mb-6">
+                            <h2 class="font-display text-2xl font-extrabold text-navy-900">Generator Draf Siaran Pers Resmi</h2>
+                            <p class="text-sm text-slate-500">Susun draf rilis berita standar kehumasan Imigrasi Papua dan simpan langsung ke folder <strong class="text-navy-800">06. PRESS RELEASE DAN MEDIA</strong>.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                            <div class="lg:col-span-5 space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Nomor Siaran Pers</label>
+                                    <input type="text" id="pr-number" value="IMI.26-HM.01.02-114" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Judul Siaran Pers</label>
+                                    <input type="text" id="pr-title" oninput="updatePressPreview()" placeholder="Contoh: Kanwil Ditjen Imigrasi Papua Tingkatkan Pengawasan Orang Asing di Perbatasan RI-PNG" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Lokasi & Tanggal</label>
+                                        <input type="text" id="pr-locdate" oninput="updatePressPreview()" value="Jayapura, 12 November 2026" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 mb-1">Narasumber Utama</label>
+                                        <input type="text" id="pr-speaker" oninput="updatePressPreview()" value="Kepala Kantor Wilayah Ditjen Imigrasi Papua" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 mb-1">Isi Pokok Berita</label>
+                                    <textarea id="pr-body" rows="5" oninput="updatePressPreview()" placeholder="Tuliskan inti kegiatan, tujuan, dan kutipan pimpinan..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm"></textarea>
+                                </div>
+                                <div class="flex flex-wrap gap-2.5 pt-1">
+                                    <button onclick="copyPressRelease()" class="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5">
+                                        <i data-lucide="copy" class="w-4 h-4"></i> Salin Teks
+                                    </button>
+                                    <button onclick="archivePressReleaseToDrive()" class="px-4 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                                        <i data-lucide="folder-check" class="w-4 h-4 text-gold-400"></i> Arsipkan ke Folder 06
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-7">
+                                <div class="bg-slate-50 border border-slate-300 rounded-2xl p-6 sm:p-8 font-serif text-slate-800 shadow-inner">
+                                    <div class="text-center border-b-2 border-navy-900 pb-4 mb-5">
+                                        <p class="text-[11px] font-sans font-bold tracking-widest uppercase text-navy-900">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN REPUBLIK INDONESIA</p>
+                                        <p class="text-xs font-sans font-extrabold tracking-wide uppercase text-navy-800">KANTOR WILAYAH DIREKTORAT JENDERAL IMIGRASI PAPUA</p>
+                                        <p class="text-[10px] font-sans text-slate-500 mt-0.5">Jl. Raya Abepura, Kota Jayapura, Papua &bull; Humas Kanwil Papua</p>
+                                    </div>
+                                    <div class="text-center mb-4">
+                                        <span class="font-sans text-xs font-bold uppercase tracking-widest px-3 py-1 bg-navy-900 text-white rounded">SIARAN PERS</span>
+                                        <p id="prev-pr-number" class="font-sans text-xs text-slate-500 mt-1.5">Nomor: IMI.26-HM.01.02-114</p>
+                                    </div>
+                                    <h3 id="prev-pr-title" class="font-sans font-bold text-lg text-navy-950 text-center mb-4">
+                                        Kanwil Ditjen Imigrasi Papua Tingkatkan Pelayanan & Pengawasan Keimigrasian
+                                    </h3>
+                                    <p id="prev-pr-content" class="text-sm leading-relaxed whitespace-pre-line text-justify">
+                                        <strong>Jayapura, 12 November 2026</strong> — Kantor Wilayah Direktorat Jenderal Imigrasi Papua terus berkomitmen menghadirkan pelayanan keimigrasian yang prima, transparan, dan akuntabel bagi masyarakat di Tanah Papua.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODALS: ACCOUNT MANAGER, FILE UPLOAD, SUBFOLDER, MEDIA MONITORING     -->
+    <!-- ===================================================================== -->
+
+    <!-- MODAL 1: MANAJEMEN AKUN GOOGLE & KONEKSI DRIVE -->
+    <div id="account-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/70 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-slate-200 fade-in">
+            <div class="bg-navy-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i data-lucide="users-round" class="w-5 h-5 text-gold-400"></i>
+                    <h3 class="font-bold text-base">Manajemen Akun Email & Koneksi Google Drive</h3>
+                </div>
+                <button onclick="closeModal('account-modal')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5 max-h-[82vh] overflow-y-auto">
+                <!-- Add New Email / Account Quickly -->
+                <form onsubmit="handleAddAccountFromModal(event)" class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                    <p class="text-xs font-bold uppercase tracking-wider text-navy-900">+ Tambah & Hubungkan Akun Email Baru</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <input type="text" id="modal-acc-name" required placeholder="Nama Pengguna / Staf" class="px-3 py-2 rounded-lg border border-slate-300 text-xs">
+                        <input type="email" id="modal-acc-email" required placeholder="Email (@gmail.com / @imigrasi.go.id)" class="px-3 py-2 rounded-lg border border-slate-300 text-xs">
+                        <input type="password" id="modal-acc-pass" required placeholder="Kata Sandi Google / Portal" class="px-3 py-2 rounded-lg border border-slate-300 text-xs">
+                        <input type="url" id="modal-acc-drive" placeholder="Link Root Folder Google Drive (opsional)" class="px-3 py-2 rounded-lg border border-slate-300 text-xs">
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="px-4 py-2 rounded-lg bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold transition">
+                            Simpan & Hubungkan Akun
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Registered Accounts List -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2.5">Daftar Akun Terdaftar (Klik untuk Beralih atau Hapus)</h4>
+                    <div id="modal-accounts-list" class="space-y-2.5">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: UNGGAH FILE KE FOLDER GOOGLE DRIVE -->
+    <div id="upload-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/70 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 fade-in">
+            <div class="bg-navy-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="upload-cloud" class="w-5 h-5 text-gold-400"></i>
+                    <h3 class="font-bold text-base">Unggah File ke Google Drive</h3>
+                </div>
+                <button onclick="closeModal('upload-modal')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleUploadFileSubmit(event)" class="p-6 space-y-4">
+                <div class="bg-navy-900/5 border border-navy-900/15 rounded-xl p-3 text-xs">
+                    <span class="text-slate-500">Lokasi Folder Tujuan:</span>
+                    <p id="upload-target-path" class="font-bold text-navy-900 mt-0.5">DIGITAL ARCHIVE > 2026 > November</p>
+                </div>
+
+                <!-- File Picker Dropzone -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">Pilih File dari Perangkat Anda</label>
+                    <label class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 hover:border-navy-700 rounded-xl p-5 cursor-pointer bg-slate-50 hover:bg-slate-100/70 transition text-center">
+                        <i data-lucide="file-up" class="w-8 h-8 text-navy-700 mb-2"></i>
+                        <span id="upload-file-label" class="text-xs font-bold text-navy-900">Klik untuk memilih file (Foto, Video, PDF, Dokumen, Desain)</span>
+                        <span class="text-[11px] text-slate-400 mt-1">Atau isi nama & tautan file Google Drive secara manual di bawah</span>
+                        <input type="file" id="upload-file-input" onchange="onLocalFileSelected(this)" class="hidden">
+                    </label>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Dokumen / File <span class="text-red-500">*</span></label>
+                    <input type="text" id="upload-file-name" required placeholder="Contoh: Dokumentasi_Kunjungan_Kakanwil_Papua.pdf" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Jenis</label>
+                        <select id="upload-file-category" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold">
+                            <option value="document">Dokumen / PDF</option>
+                            <option value="image">Foto / Gambar</option>
+                            <option value="video">Video / Reels</option>
+                            <option value="design">Desain Grafis</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Ukuran File</label>
+                        <input type="text" id="upload-file-size" value="2.4 MB" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-xs">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tautan File Google Drive (Opsional)</label>
+                    <input type="url" id="upload-file-url" placeholder="https://drive.google.com/file/d/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Keterangan / Tag Kegiatan</label>
+                    <input type="text" id="upload-file-note" placeholder="Contoh: Kegiatan kunjungan kerja di Kanim Kelas I TPI Jayapura" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs">
+                </div>
+
+                <div class="flex justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeModal('upload-modal')" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold shadow-md">Unggah & Sinkronkan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: TAMBAH SUBFOLDER / TAHUN BARU -->
+    <div id="subfolder-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/70 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 fade-in">
+            <div class="bg-navy-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 id="subfolder-modal-title" class="font-bold text-base">Tambah Subfolder Baru</h3>
+                <button onclick="closeModal('subfolder-modal')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="handleCreateFolderSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label id="subfolder-name-label" class="block text-xs font-bold text-slate-700 mb-1">Nama Folder / Subfolder <span class="text-red-500">*</span></label>
+                    <input type="text" id="new-folder-name" required placeholder="Contoh: Rapat Koordinasi Tim Pora" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tautan Google Drive Folder (Opsional)</label>
+                    <input type="url" id="new-folder-drive-url" placeholder="https://drive.google.com/drive/folders/..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('subfolder-modal')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold">Buat Folder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: KONFIGURASI LINK GOOGLE DRIVE PER FOLDER -->
+    <div id="drivelink-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/70 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 fade-in">
+            <div class="bg-navy-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-base">Tautkan Link Google Drive</h3>
+                <button onclick="closeModal('drivelink-modal')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="handleSaveDriveLinkSubmit(event)" class="p-6 space-y-4">
+                <p class="text-xs text-slate-600">Masukkan URL folder Google Drive asli agar tombol <strong>Buka di Google Drive</strong> langsung mengarah ke folder yang sesuai.</p>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">URL Google Drive Folder</label>
+                    <input type="url" id="config-drive-url-input" required placeholder="https://drive.google.com/drive/folders/1..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('drivelink-modal')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold">Simpan Tautan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: CATAT PEMBERITAAN (MEDIA MONITORING) -->
+    <div id="monitoring-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/70 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 fade-in">
+            <div class="bg-navy-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-base">Catat Pemberitaan & Isu Publik</h3>
+                <button onclick="closeModal('monitoring-modal')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="handleSaveMonitoringSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Judul Berita / Isu Publik <span class="text-red-500">*</span></label>
+                    <input type="text" id="mon-title" required placeholder="Contoh: Layanan Paspor Simpatik Kanwil Imigrasi Papua Disambut Antusias" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Sumber Media <span class="text-red-500">*</span></label>
+                        <input type="text" id="mon-source" required placeholder="Contoh: Cenderawasih Pos / Antara Papua" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal Tayang <span class="text-red-500">*</span></label>
+                        <input type="date" id="mon-date" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Sentimen Pemberitaan</label>
+                        <select id="mon-sentiment" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold">
+                            <option value="Positif">Positif</option>
+                            <option value="Netral">Netral</option>
+                            <option value="Negatif">Negatif</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tindak Lanjut</label>
+                        <select id="mon-followup" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold">
+                            <option value="Pemantauan">Pemantauan</option>
+                            <option value="Arsip berita">Arsip berita</option>
+                            <option value="Koordinasi internal">Koordinasi internal</option>
+                            <option value="Klarifikasi / Hak Jawab">Klarifikasi / Hak Jawab</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Tautan Berita (URL)</label>
+                    <input type="url" id="mon-url" placeholder="https://..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Ringkasan / Catatan Evaluasi</label>
+                    <textarea id="mon-summary" rows="2" placeholder="Catatan singkat isi pemberitaan..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('monitoring-modal')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold">Simpan Pemberitaan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 6: TAMBAH AGENDA PUBLIKASI -->
+    <div id="agenda-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-navy-950/70 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 fade-in">
+            <div class="bg-navy-900 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-base">Tambah Jadwal Publikasi Humas</h3>
+                <button onclick="closeModal('agenda-modal')" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="handleSaveAgendaSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Nama Kegiatan / Konten <span class="text-red-500">*</span></label>
+                    <input type="text" id="ag-title" required placeholder="Contoh: Liputan Rapat Koordinasi Tim Pora Jayapura" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Tanggal</label>
+                        <input type="date" id="ag-date" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Kanal Publikasi</label>
+                        <select id="ag-channel" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs font-semibold">
+                            <option value="Instagram & Reels">Instagram & Reels</option>
+                            <option value="Siaran Pers & Website">Siaran Pers & Website</option>
+                            <option value="YouTube & Liputan">YouTube & Liputan</option>
+                            <option value="Dokumentasi Internal">Dokumentasi Internal</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Penanggung Jawab</label>
+                    <input type="text" id="ag-pic" placeholder="Tim Humas Kanwil Papua" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm">
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeModal('agenda-modal')" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold">Simpan Jadwal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- JAVASCRIPT LOGIC & DATA ARCHITECTURE                                  -->
+    <!-- ===================================================================== -->
+    <script>
+        // =========================================================================
+        // 1. HIGH-PRECISION SVG OFFICIAL LOGOS (KEMENIMIPAS & IMIGRASI)
+        // =========================================================================
+        const SVG_LOGO_KEMENIMIPAS = `
+        <svg class="w-10 h-10 sm:w-11 sm:h-11 shrink-0 drop-shadow" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-label="Logo Kementerian Imigrasi dan Pemasyarakatan RI">
+            <defs>
+                <path id="topArcText" d="M 26,100 A 74,74 0 1,1 174,100" />
+                <path id="bottomArcText" d="M 176,104 A 76,76 0 0,1 24,104" />
+            </defs>
+            <!-- Outer Navy Circle -->
+            <circle cx="100" cy="100" r="96" fill="#0A2342" stroke="#D4AF37" stroke-width="3.5"/>
+            <circle cx="100" cy="100" r="64" fill="#0D2B52" stroke="#D4AF37" stroke-width="2" stroke-dasharray="4 2"/>
+            <!-- Circular Text -->
+            <text fill="#FFFFFF" font-size="10.2" font-weight="800" font-family="Inter, sans-serif" letter-spacing="1.1">
+                <textPath href="#topArcText" startOffset="50%" text-anchor="middle">KEMENTERIAN IMIGRASI DAN PEMASYARAKATAN</textPath>
+            </text>
+            <text fill="#E5C158" font-size="10.5" font-weight="800" font-family="Inter, sans-serif" letter-spacing="1.8">
+                <textPath href="#bottomArcText" startOffset="50%" text-anchor="middle">REPUBLIK INDONESIA</textPath>
+            </text>
+            <!-- Top Star -->
+            <polygon points="100,40 103.5,49 113,49 105.5,54.5 108.5,63.5 100,58 91.5,63.5 94.5,54.5 87,49 96.5,49" fill="#D4AF37"/>
+            <!-- Golden Wreath -->
+            <path d="M74,142 C52,126 48,92 66,68 M126,142 C148,126 152,92 134,68" fill="none" stroke="#D4AF37" stroke-width="4.5" stroke-linecap="round"/>
+            <path d="M64,125 L54,118 M60,108 L50,100 M62,90 L53,82 M136,125 L146,118 M140,108 L150,100 M138,90 L147,82" stroke="#E5C158" stroke-width="3" stroke-linecap="round"/>
+            <!-- Stylized Garuda Emblem -->
+            <path d="M75,82 C70,96 74,114 86,122 L100,130 L114,122 C126,114 130,96 125,82 L113,90 L100,76 L87,90 Z" fill="#D4AF37"/>
+            <!-- Shield Center -->
+            <path d="M89,92 L111,92 L111,108 C111,116 100,122 100,122 C100,122 89,116 89,108 Z" fill="#FFFFFF" stroke="#0A2342" stroke-width="1.5"/>
+            <line x1="100" y1="92" x2="100" y2="121" stroke="#0A2342" stroke-width="1.2"/>
+            <line x1="89" y1="104" x2="111" y2="104" stroke="#0A2342" stroke-width="1.2"/>
+            <polygon points="100,100 102,104 106,104 103,106.5 104,110 100,108 96,110 97,106.5 94,104 98,104" fill="#D4AF37"/>
+            <!-- Ribbon -->
+            <path d="M72,135 Q100,145 128,135 L124,144 Q100,153 76,144 Z" fill="#FFFFFF"/>
+            <text x="100" y="143" text-anchor="middle" fill="#0A2342" font-size="5.5" font-weight="800">BHINNEKA TUNGGAL IKA</text>
+        </svg>`;
+
+        const SVG_LOGO_IMIGRASI = `
+        <svg class="w-10 h-10 sm:w-11 sm:h-11 shrink-0 drop-shadow" viewBox="0 0 200 215" xmlns="http://www.w3.org/2000/svg" aria-label="Logo Direktorat Jenderal Imigrasi">
+            <!-- Bottom Motto Ribbon -->
+            <path d="M14,132 L40,118 L160,118 L186,132 L172,168 Q100,205 28,168 Z" fill="#FFFFFF" stroke="#0A2342" stroke-width="3"/>
+            <!-- Shield Body -->
+            <path d="M30,24 Q100,6 170,24 L170,104 Q170,156 100,180 Q30,156 30,104 Z" fill="#0A2342" stroke="#D4AF37" stroke-width="5"/>
+            <!-- Inner Rope Border -->
+            <path d="M37,30 Q100,14 163,30 L163,102 Q163,149 100,171 Q37,149 37,102 Z" fill="none" stroke="#E5C158" stroke-width="2" stroke-dasharray="5 3"/>
+            <!-- Top Star -->
+            <polygon points="100,26 104,36 115,36 106,42 109,52 100,46 91,52 94,42 85,36 96,36" fill="#D4AF37"/>
+            <!-- Candi Bentar (Split Gate) -->
+            <g fill="#E5C158" stroke="#0A2342" stroke-width="1.2">
+                <!-- Left Pillar -->
+                <rect x="70" y="102" width="24" height="14"/>
+                <rect x="74" y="89" width="20" height="13"/>
+                <rect x="78" y="77" width="16" height="12"/>
+                <rect x="82" y="66" width="12" height="11"/>
+                <rect x="86" y="56" width="8" height="10"/>
+                <!-- Right Pillar -->
+                <rect x="106" y="102" width="24" height="14"/>
+                <rect x="106" y="89" width="20" height="13"/>
+                <rect x="106" y="77" width="16" height="12"/>
+                <rect x="106" y="66" width="12" height="11"/>
+                <rect x="106" y="56" width="8" height="10"/>
+                <!-- Base -->
+                <rect x="64" y="116" width="72" height="8"/>
+            </g>
+            <!-- Golden Paddy/Leaves -->
+            <path d="M62,126 C44,106 46,72 68,52 M138,126 C156,106 154,72 132,52" fill="none" stroke="#D4AF37" stroke-width="4" stroke-linecap="round"/>
+            <!-- IMIGRASI Banner -->
+            <path d="M54,124 Q100,142 146,124 L140,144 Q100,160 60,144 Z" fill="#FFFFFF" stroke="#0A2342" stroke-width="2"/>
+            <text x="100" y="143" text-anchor="middle" fill="#0A2342" font-size="14.5" font-weight="900" font-family="Inter, sans-serif" letter-spacing="1.2">IMIGRASI</text>
+            <!-- Bottom Motto Text -->
+            <text x="100" y="185" text-anchor="middle" fill="#0A2342" font-size="9.5" font-weight="800" font-family="Inter, sans-serif" letter-spacing="0.8">BHUMI PURA WIRA WIBAWA</text>
+        </svg>`;
+
+        // =========================================================================
+        // 2. CONSTANTS & DEFAULT FOLDER HIERARCHY (MATCHING REFERENCE PHOTOS)
+        // =========================================================================
+        const MONTHS_LIST = [
+            'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        const DEFAULT_CATEGORIES = [
+            {
+                id: 'cat-01',
+                name: '01. Dokumentasi Pimpinan',
+                driveUrl: 'https://drive.google.com/drive/folders/1_GvC_jovFU7O6E8PpQCo1TWL3TMHBKRU',
+                subfolders: [
+                    'Arahan dan Sambutan',
+                    'Kegiatan Kepala Divisi',
+                    'Kegiatan Kepala Kantor Wilayah',
+                    'Kegiatan Protokoler',
+                    'Kunjungan Kerja',
+                    'Rapat Pimpinan'
+                ]
+            },
+            {
+                id: 'cat-02',
+                name: '02. Dokumentasi Kegiatan',
+                driveUrl: 'https://drive.google.com/drive/folders/17WphUOP6h28wyvkS6InQ2IqFw297iC8b',
+                subfolders: [
+                    'Kegiatan Internal Kantor',
+                    'Kegiatan Lapangan',
+                    'Operasional Keimigrasian',
+                    'Pelayanan Keimigrasian',
+                    'Pengawasan Keimigrasian',
+                    'Pertemuan Online Zoom',
+                    'Rapat dan Koordinasi',
+                    'Sosialisasi dan Bimbingan Teknis'
+                ]
+            },
+            {
+                id: 'cat-03',
+                name: '03. Konten Media Sosial',
+                driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                subfolders: [
+                    'Instagram & Reels',
+                    'TikTok & Video Pendek',
+                    'YouTube & Liputan',
+                    'Infografis & Edukasi Publik'
+                ]
+            },
+            {
+                id: 'cat-04',
+                name: '04. DESAIN GRAFIS DAN PUBLIKASI',
+                driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                subfolders: [
+                    'Banner & Spanduk',
+                    'Poster & Flyer',
+                    'Template Resmi Humas',
+                    'Materi Pameran & Baliho'
+                ]
+            },
+            {
+                id: 'cat-05',
+                name: '05. BULETIN DAN LAPORAN HUMAS',
+                driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                subfolders: [
+                    'Buletin Bulanan',
+                    'Laporan Kinerja Humas',
+                    'Laporan Evaluasi Publikasi',
+                    'Kliping Media'
+                ]
+            },
+            {
+                id: 'cat-06',
+                name: '06. PRESS RELEASE DAN MEDIA',
+                driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                subfolders: [
+                    'Siaran Pers Resmi',
+                    'Undangan Liputan Media',
+                    'Konferensi Pers',
+                    'Daftar Kontak Jurnalis'
+                ]
+            },
+            {
+                id: 'cat-07',
+                name: '07. KEGIATAN KHUSUS DAN HARI BESAR',
+                driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                subfolders: [
+                    'Hari Bhakti Imigrasi',
+                    'HUT Kemerdekaan RI',
+                    'Hari Pengayoman / Kemenimipas',
+                    'Kegiatan Bhakti Sosial & Khusus'
+                ]
+            }
+        ];
+
+        const STORAGE_KEY = 'humas_digital_hub_papua_v1';
+
+        // Default Initial State
+        function getInitialState() {
+            return {
+                currentUser: null,
+                accounts: [
+                    {
+                        id: 'acc-1',
+                        name: 'Humas Kanwil Imigrasi Papua',
+                        role: 'Administrator Kehumasan',
+                        email: 'humas.papua@imigrasi.go.id',
+                        password: 'papua2026',
+                        connected: true,
+                        driveUrl: 'https://drive.google.com/drive/folders/1LBCGk4G3IcWlQipMyFlFaqh63L729rhl',
+                        lastLogin: '06 Nov 2026'
+                    },
+                    {
+                        id: 'acc-2',
+                        name: 'Daniel Pratama',
+                        role: 'Pranata Humas Ahli Pertama',
+                        email: 'daniel.imigrasi.papua@gmail.com',
+                        password: 'daniel2026',
+                        connected: true,
+                        driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                        lastLogin: '05 Nov 2026'
+                    }
+                ],
+                years: ['2025', '2026', '2027'],
+                customSubfolders: {
+                    // key: "2026|November|01. Dokumentasi Pimpinan" -> ['Subfolder Tambahan']
+                },
+                driveLinks: {
+                    'ROOT': 'https://drive.google.com/drive/folders/1LBCGk4G3IcWlQipMyFlFaqh63L729rhl',
+                    '2026': 'https://drive.google.com/drive/folders/1LBCGk4G3IcWlQipMyFlFaqh63L729rhl',
+                    '2026|September': 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                    '2026|November': 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6'
+                },
+                files: [
+                    {
+                        id: 'file-101',
+                        name: 'Arahan_Kakanwil_Penguatan_Kehumasan_Papua.pdf',
+                        category: 'document',
+                        size: '3.2 MB',
+                        year: '2026',
+                        month: 'November',
+                        mainCategory: '01. Dokumentasi Pimpinan',
+                        subfolder: 'Arahan dan Sambutan',
+                        owner: 'humas.papua@imigrasi.go.id',
+                        date: '05 Nov 2026',
+                        driveUrl: 'https://drive.google.com/drive/folders/1_GvC_jovFU7O6E8PpQCo1TWL3TMHBKRU',
+                        note: 'Dokumen arahan resmi Kepala Kantor Wilayah Ditjen Imigrasi Papua'
+                    },
+                    {
+                        id: 'file-102',
+                        name: 'Dokumentasi_Operasi_Pengawasan_Orang_Asing_Jayapura.jpg',
+                        category: 'image',
+                        size: '4.8 MB',
+                        year: '2026',
+                        month: 'November',
+                        mainCategory: '02. Dokumentasi Kegiatan',
+                        subfolder: 'Pengawasan Keimigrasian',
+                        owner: 'daniel.imigrasi.papua@gmail.com',
+                        date: '04 Nov 2026',
+                        driveUrl: 'https://drive.google.com/drive/folders/17WphUOP6h28wyvkS6InQ2IqFw297iC8b',
+                        note: 'Foto kegiatan lapangan tim intelijen dan penindakan keimigrasian'
+                    },
+                    {
+                        id: 'file-103',
+                        name: 'Reels_Edukasi_Layanan_Paspor_Simpatik_Papua.mp4',
+                        category: 'video',
+                        size: '28.5 MB',
+                        year: '2026',
+                        month: 'November',
+                        mainCategory: '03. Konten Media Sosial',
+                        subfolder: 'Instagram & Reels',
+                        owner: 'humas.papua@imigrasi.go.id',
+                        date: '03 Nov 2026',
+                        driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                        note: 'Konten publikasi layanan paspor akhir pekan'
+                    },
+                    {
+                        id: 'file-104',
+                        name: 'Siaran_Pers_Sinergi_Keimigrasian_Perbatasan_Skouw.pdf',
+                        category: 'document',
+                        size: '1.5 MB',
+                        year: '2026',
+                        month: 'September',
+                        mainCategory: '06. PRESS RELEASE DAN MEDIA',
+                        subfolder: 'Siaran Pers Resmi',
+                        owner: 'humas.papua@imigrasi.go.id',
+                        date: '18 Sep 2026',
+                        driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                        note: 'Rilis pers resmi PLBN Skouw'
+                    },
+                    {
+                        id: 'file-105',
+                        name: 'Banner_Hari_Bhakti_Imigrasi_Kanwil_Papua.png',
+                        category: 'design',
+                        size: '12.1 MB',
+                        year: '2026',
+                        month: 'Oktober',
+                        mainCategory: '04. DESAIN GRAFIS DAN PUBLIKASI',
+                        subfolder: 'Banner & Spanduk',
+                        owner: 'daniel.imigrasi.papua@gmail.com',
+                        date: '22 Okt 2026',
+                        driveUrl: 'https://drive.google.com/drive/folders/1HmW2dbIjrAjwD0mjbbB6Q4rWbmwAard6',
+                        note: 'Desain baliho dan spanduk utama kantor wilayah'
+                    }
+                ],
+                monitoring: [
+                    {
+                        id: 'mon-1',
+                        title: 'Informasi layanan keimigrasian di Papua',
+                        source: 'Media Online A (Cenderawasih News)',
+                        date: '2026-11-05',
+                        sentiment: 'Positif',
+                        followup: 'Pemantauan',
+                        url: 'https://imigrasi.go.id',
+                        summary: 'Pemberitaan positif mengenai kemudahan permohonan paspor dan layanan ramah HAM di Papua.'
+                    },
+                    {
+                        id: 'mon-2',
+                        title: 'Informasi pengawasan orang asing',
+                        source: 'Media Online B (Papua Terkini)',
+                        date: '2026-11-04',
+                        sentiment: 'Netral',
+                        followup: 'Arsip berita',
+                        url: 'https://imigrasi.go.id',
+                        summary: 'Liputan kegiatan patroli gabungan pengawasan keberadaan WNA di wilayah Kota Jayapura.'
+                    },
+                    {
+                        id: 'mon-3',
+                        title: 'Isu pelayanan paspor masyarakat',
+                        source: 'Media Online C (Suara Jayapura)',
+                        date: '2026-11-02',
+                        sentiment: 'Netral',
+                        followup: 'Koordinasi internal',
+                        url: 'https://imigrasi.go.id',
+                        summary: 'Aspirasi masyarakat terkait penambahan kuota antrean paspor di wilayah pedalaman Papua.'
+                    }
+                ],
+                agendas: [
+                    {
+                        id: 'ag-1',
+                        title: 'Publikasi Infografis Layanan E-Paspor Kanwil Papua',
+                        date: '2026-11-14',
+                        channel: 'Instagram & Reels',
+                        pic: 'Tim Kreatif Humas'
+                    },
+                    {
+                        id: 'ag-2',
+                        title: 'Peliputan Kunjungan Kerja Kepala Kantor Wilayah ke PLBN Skouw',
+                        date: '2026-11-18',
+                        channel: 'Siaran Pers & Website',
+                        pic: 'Humas & Protokol'
+                    },
+                    {
+                        id: 'ag-3',
+                        title: 'Produksi Video Profil Capaian Kinerja Triwulan IV',
+                        date: '2026-11-24',
+                        channel: 'YouTube & Liputan',
+                        pic: 'Tim Dokumentasi'
+                    }
+                ]
+            };
+        }
+
+        let appState = loadAppState();
+
+        // Navigation State for Digital Archive Explorer
+        let archiveNav = {
+            year: '2026',
+            month: null,       // e.g., 'November'
+            category: null,    // e.g., '01. Dokumentasi Pimpinan'
+            subfolder: null    // e.g., 'Arahan dan Sambutan'
+        };
+
+        let activeSection = 'dashboard';
+
+        function loadAppState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    return { ...getInitialState(), ...parsed };
+                }
+            } catch (e) {
+                console.error('Gagal memuat state lokal:', e);
+            }
+            return getInitialState();
+        }
+
+        function saveAppState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch (e) {
+                console.error('Gagal menyimpan state:', e);
+            }
+        }
+
+        // =========================================================================
+        // 3. INITIALIZATION & UI HELPERS
+        // =========================================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            // Inject Official SVGs
+            const logoMarkup = SVG_LOGO_KEMENIMIPAS + SVG_LOGO_IMIGRASI;
+            document.getElementById('portal-logos').innerHTML = logoMarkup;
+            document.getElementById('navbar-logos').innerHTML = logoMarkup;
+
+            // Set default date inputs
+            const todayISO = '2026-11-12';
+            const monDateEl = document.getElementById('mon-date');
+            const agDateEl = document.getElementById('ag-date');
+            if (monDateEl) monDateEl.value = todayISO;
+            if (agDateEl) agDateEl.value = todayISO;
+
+            renderPortalSavedAccounts();
+
+            if (appState.currentUser) {
+                enterMainApp();
+            } else {
+                showAuthPortal();
+            }
+
+            lucide.createIcons();
+        });
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'bg-navy-900 text-white border-gold-500/50',
+                error: 'bg-rose-700 text-white border-rose-400',
+                info: 'bg-slate-800 text-white border-slate-600'
+            };
+            const iconName = type === 'error' ? 'alert-circle' : (type === 'info' ? 'info' : 'check-circle-2');
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border text-xs sm:text-sm font-medium fade-in ${colors[type] || colors.success}`;
+            toast.innerHTML = `
+                <i data-lucide="${iconName}" class="w-4 h-4 text-gold-400 shrink-0"></i>
+                <span class="flex-1">${message}</span>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(6px)';
+                toast.style.transition = 'all 0.25s ease';
+                setTimeout(() => toast.remove(), 250);
+            }, 3400);
+        }
+
+        function showConfirmDialog({ title, message, okText = 'Ya, Hapus', danger = true, onConfirm }) {
+            const modal = document.getElementById('confirm-modal');
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            const okBtn = document.getElementById('confirm-ok-btn');
+            const cancelBtn = document.getElementById('confirm-cancel-btn');
+            okBtn.textContent = okText;
+            okBtn.className = danger
+                ? 'px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition'
+                : 'px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-navy-800 hover:bg-navy-900 shadow-sm transition';
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+
+            cancelBtn.onclick = cleanup;
+            okBtn.onclick = () => {
+                cleanup();
+                if (typeof onConfirm === 'function') onConfirm();
+            };
+        }
+
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('hidden');
+                el.classList.add('flex');
+                lucide.createIcons();
+            }
+        }
+
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            }
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            const isPass = input.type === 'password';
+            input.type = isPass ? 'text' : 'password';
+            btn.innerHTML = `<i data-lucide="${isPass ? 'eye-off' : 'eye'}" class="w-4 h-4"></i>`;
+            lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 4. PORTAL AUTENTIKASI & MULTI-AKUN GOOGLE
+        // =========================================================================
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+            const loginBtn = document.getElementById('tab-login-btn');
+            const regBtn = document.getElementById('tab-register-btn');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                loginBtn.className = 'py-2.5 px-4 rounded-xl text-sm font-bold transition bg-white text-navy-900 shadow-sm flex items-center justify-center gap-2';
+                regBtn.className = 'py-2.5 px-4 rounded-xl text-sm font-semibold transition text-slate-600 hover:text-navy-900 flex items-center justify-center gap-2';
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                regBtn.className = 'py-2.5 px-4 rounded-xl text-sm font-bold transition bg-white text-navy-900 shadow-sm flex items-center justify-center gap-2';
+                loginBtn.className = 'py-2.5 px-4 rounded-xl text-sm font-semibold transition text-slate-600 hover:text-navy-900 flex items-center justify-center gap-2';
+            }
+            lucide.createIcons();
+        }
+
+        function renderPortalSavedAccounts() {
+            const listEl = document.getElementById('portal-saved-accounts-list');
+            const countEl = document.getElementById('saved-accounts-count');
+            countEl.textContent = `${appState.accounts.length} Akun`;
+
+            if (appState.accounts.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-6 px-4 rounded-xl bg-navy-950/40 border border-white/10 text-xs text-slate-300">
+                        Belum ada akun Google tersimpan. Silakan masuk atau daftar akun baru di formulir sebelah kanan.
+                    </div>`;
+                return;
+            }
+
+            listEl.innerHTML = appState.accounts.map(acc => {
+                const initials = acc.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+                return `
+                <div class="group flex items-center justify-between gap-3 p-3 rounded-xl bg-navy-950/50 hover:bg-navy-950/80 border border-white/15 transition">
+                    <button type="button" onclick="quickLoginAccount('${acc.id}')" class="flex items-center gap-3 flex-1 min-w-0 text-left">
+                        <div class="w-10 h-10 rounded-xl bg-gold-500 text-navy-950 font-extrabold text-xs flex items-center justify-center shrink-0 shadow">
+                            ${initials}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <p class="text-sm font-bold text-white truncate">${acc.name}</p>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${acc.connected ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/30' : 'bg-slate-500/20 text-slate-300'}">
+                                    <span class="w-1.5 h-1.5 rounded-full ${acc.connected ? 'bg-emerald-400' : 'bg-slate-400'}"></span>
+                                    ${acc.connected ? 'Terhubung & Tersambung' : 'Tersimpan'}
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-300 truncate">${acc.email}</p>
+                        </div>
+                    </button>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <button type="button" onclick="quickLoginAccount('${acc.id}')" title="Masuk dengan akun ini"
+                            class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-gold-500 hover:text-navy-950 text-white text-xs font-bold transition">
+                            Masuk
+                        </button>
+                        <button type="button" onclick="deleteSavedAccount('${acc.id}')" title="Hapus akun dari daftar"
+                            class="p-1.5 rounded-lg bg-red-500/15 hover:bg-red-500 text-red-300 hover:text-white transition">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function quickLoginAccount(accountId) {
+            const acc = appState.accounts.find(a => a.id === accountId);
+            if (!acc) return;
+            acc.connected = true;
+            acc.lastLogin = '12 Nov 2026';
+            appState.currentUser = acc;
+            saveAppState();
+            enterMainApp();
+            showToast(`Berhasil masuk & terhubung ke Google Drive (${acc.email})`);
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+            const connectDrive = document.getElementById('login-connect-drive').checked;
+
+            if (!email || !password) return;
+
+            let existing = appState.accounts.find(a => a.email.toLowerCase() === email);
+            if (existing) {
+                existing.password = password;
+                existing.connected = connectDrive;
+                existing.lastLogin = '12 Nov 2026';
+                appState.currentUser = existing;
+            } else {
+                // Auto-register any valid Google/Office email entering the portal
+                const derivedName = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                const newAcc = {
+                    id: 'acc-' + Date.now(),
+                    name: derivedName,
+                    role: email.endsWith('.go.id') ? 'Pegawai Kanwil Imigrasi Papua' : 'Kontributor Humas Papua',
+                    email: email,
+                    password: password,
+                    connected: connectDrive,
+                    driveUrl: appState.driveLinks['ROOT'],
+                    lastLogin: '12 Nov 2026'
+                };
+                appState.accounts.unshift(newAcc);
+                appState.currentUser = newAcc;
+            }
+
+            saveAppState();
+            enterMainApp();
+            showToast(`Selamat datang, ${appState.currentUser.name}! Google Drive tersambung.`);
+        }
+
+        function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const role = document.getElementById('reg-role').value.trim();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+            const driveUrl = document.getElementById('reg-drive-url').value.trim() || appState.driveLinks['ROOT'];
+
+            const exists = appState.accounts.find(a => a.email.toLowerCase() === email);
+            if (exists) {
+                showToast('Email tersebut sudah terdaftar. Silakan masuk melalui tab Masuk Portal.', 'info');
+                switchAuthTab('login');
+                document.getElementById('login-email').value = email;
+                return;
+            }
+
+            const newAccount = {
+                id: 'acc-' + Date.now(),
+                name,
+                role,
+                email,
+                password,
+                connected: true,
+                driveUrl,
+                lastLogin: '12 Nov 2026'
+            };
+
+            appState.accounts.unshift(newAccount);
+            appState.currentUser = newAccount;
+            saveAppState();
+            enterMainApp();
+            showToast(`Akun ${email} berhasil didaftarkan & terhubung ke Google Drive!`);
+        }
+
+        function deleteSavedAccount(accountId) {
+            const target = appState.accounts.find(a => a.id === accountId);
+            if (!target) return;
+
+            showConfirmDialog({
+                title: 'Hapus Akun Email Terdaftar?',
+                message: `Akun "${target.email}" akan dihapus dari daftar akses cepat portal ini. Anda tetap dapat mendaftarkannya kembali kapan saja.`,
+                okText: 'Hapus Akun',
+                danger: true,
+                onConfirm: () => {
+                    appState.accounts = appState.accounts.filter(a => a.id !== accountId);
+                    if (appState.currentUser && appState.currentUser.id === accountId) {
+                        appState.currentUser = appState.accounts[0] || null;
+                    }
+                    saveAppState();
+                    renderPortalSavedAccounts();
+                    renderAccountModalList();
+                    if (!appState.currentUser) {
+                        closeModal('account-modal');
+                        showAuthPortal();
+                    } else {
+                        updateHeaderUserUI();
+                    }
+                    showToast(`Akun ${target.email} telah dihapus dari daftar.`, 'info');
+                }
+            });
+        }
+
+        function logoutToPortal() {
+            appState.currentUser = null;
+            saveAppState();
+            showAuthPortal();
+            showToast('Anda telah keluar ke Portal Masuk.', 'info');
+        }
+
+        function showAuthPortal() {
+            document.getElementById('auth-portal').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+            renderPortalSavedAccounts();
+        }
+
+        function enterMainApp() {
+            document.getElementById('auth-portal').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            updateHeaderUserUI();
+            navigateTo('dashboard');
+        }
+
+        function updateHeaderUserUI() {
+            const user = appState.currentUser;
+            if (!user) return;
+            const initials = user.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+            document.getElementById('nav-user-avatar').textContent = initials;
+            document.getElementById('nav-user-name').textContent = user.name;
+            document.getElementById('nav-user-role').textContent = user.role;
+            document.getElementById('nav-drive-email').textContent = user.email;
+            document.getElementById('dash-user-name').textContent = user.name;
+            document.getElementById('kpi-drive-account').textContent = user.email;
+            document.getElementById('archive-active-email').textContent = user.email;
+            document.getElementById('banner-drive-email').textContent = user.email;
+        }
+
+        // Account Manager Modal inside Dashboard
+        function openAccountManagerModal() {
+            renderAccountModalList();
+            openModal('account-modal');
+        }
+
+        function renderAccountModalList() {
+            const container = document.getElementById('modal-accounts-list');
+            container.innerHTML = appState.accounts.map(acc => {
+                const isCurrent = appState.currentUser && appState.currentUser.id === acc.id;
+                return `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border ${isCurrent ? 'border-navy-800 bg-navy-900/5' : 'border-slate-200 bg-white'}">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <p class="text-sm font-bold text-navy-900">${acc.name}</p>
+                            ${isCurrent ? '<span class="px-2 py-0.5 text-[10px] font-bold bg-navy-900 text-gold-400 rounded-full">Sedang Aktif</span>' : ''}
+                            <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-700 rounded-full">Google Drive Terhubung</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-0.5">${acc.email} &bull; <span class="text-slate-400">${acc.role}</span></p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        ${!isCurrent ? `<button onclick="switchActiveAccount('${acc.id}')" class="px-3 py-1.5 rounded-lg bg-navy-800 hover:bg-navy-900 text-white text-xs font-bold">Gunakan Akun</button>` : ''}
+                        <button onclick="deleteSavedAccount('${acc.id}')" class="px-2.5 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold flex items-center gap-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Hapus
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        function switchActiveAccount(accountId) {
+            const acc = appState.accounts.find(a => a.id === accountId);
+            if (!acc) return;
+            appState.currentUser = acc;
+            saveAppState();
+            updateHeaderUserUI();
+            renderAccountModalList();
+            showToast(`Beralih ke akun Google: ${acc.email}`);
+        }
+
+        function handleAddAccountFromModal(e) {
+            e.preventDefault();
+            const name = document.getElementById('modal-acc-name').value.trim();
+            const email = document.getElementById('modal-acc-email').value.trim().toLowerCase();
+            const password = document.getElementById('modal-acc-pass').value;
+            const driveUrl = document.getElementById('modal-acc-drive').value.trim() || appState.driveLinks['ROOT'];
+
+            const newAcc = {
+                id: 'acc-' + Date.now(),
+                name,
+                role: 'Personel Humas Kanwil Papua',
+                email,
+                password,
+                connected: true,
+                driveUrl,
+                lastLogin: '12 Nov 2026'
+            };
+
+            appState.accounts.unshift(newAcc);
+            appState.currentUser = newAcc;
+            saveAppState();
+            updateHeaderUserUI();
+            renderAccountModalList();
+            e.target.reset();
+            showToast(`Akun ${email} ditambahkan & dihubungkan ke Google Drive.`);
+        }
+
+        // =========================================================================
+        // 5. NAVIGATION & DASHBOARD ANALYTICS
+        // =========================================================================
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('app-sidebar');
+            const backdrop = document.getElementById('mobile-sidebar-backdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function navigateTo(section) {
+            activeSection = section;
+            const views = ['dashboard', 'archive', 'monitoring', 'calendar', 'press'];
+            views.forEach(v => {
+                const el = document.getElementById('view-' + v);
+                if (el) el.classList.toggle('hidden', v !== section);
+            });
+
+            // Highlight Sidebar Item
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                const isTarget = btn.getAttribute('data-nav') === section;
+                btn.className = isTarget
+                    ? 'nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold bg-navy-900 text-white shadow-sm transition'
+                    : 'nav-item w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 hover:text-navy-900 transition';
+            });
+
+            // Close mobile drawer if open
+            const sidebar = document.getElementById('app-sidebar');
+            if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+                toggleMobileSidebar();
+            }
+
+            if (section === 'dashboard') renderDashboard();
+            if (section === 'archive') renderArchiveExplorer();
+            if (section === 'monitoring') renderMediaMonitoring();
+            if (section === 'calendar') renderAgendas();
+            lucide.createIcons();
+        }
+
+        function jumpToCurrentMonthArchive() {
+            archiveNav = { year: '2026', month: 'November', category: null, subfolder: null };
+            navigateTo('archive');
+        }
+
+        function renderDashboard() {
+            const totalFiles = appState.files.length;
+            const totalFolders = appState.years.length * 12 * 7;
+            const totalNews = appState.monitoring.length;
+
+            const posCount = appState.monitoring.filter(m => m.sentiment === 'Positif').length;
+            const neuCount = appState.monitoring.filter(m => m.sentiment === 'Netral').length;
+            const negCount = appState.monitoring.filter(m => m.sentiment === 'Negatif').length;
+
+            document.getElementById('kpi-total-files').textContent = totalFiles;
+            document.getElementById('kpi-total-folders').textContent = totalFolders;
+            document.getElementById('kpi-total-news').textContent = totalNews;
+            document.getElementById('kpi-sentiment-mini').innerHTML = `
+                <span class="text-emerald-600">${posCount} Positif</span> &bull;
+                <span class="text-slate-600">${neuCount} Netral</span> &bull;
+                <span class="text-rose-600">${negCount} Negatif</span>
+            `;
+
+            // Sidebar storage widget
+            document.getElementById('sidebar-file-count').textContent = `${totalFiles} File`;
+            const simulatedGB = (8.4 + totalFiles * 0.35).toFixed(1);
+            const pct = Math.min(95, Math.round((simulatedGB / 30) * 100));
+            document.getElementById('sidebar-storage-bar').style.width = `${pct}%`;
+            document.getElementById('sidebar-storage-text').textContent = `${simulatedGB} GB / 30 GB`;
+
+            // Monthly Bar Chart
+            const chartEl = document.getElementById('monthly-chart-container');
+            const countsPerMonth = MONTHS_LIST.map((m, idx) => {
+                const realFiles = appState.files.filter(f => f.year === '2026' && f.month === m).length;
+                // Baseline visual height + actual uploaded count
+                const baseline = [3, 4, 2, 5, 4, 6, 3, 5, 7, 6, 8, 2][idx];
+                return { month: m.slice(0, 3), fullMonth: m, count: realFiles + baseline, realFiles };
+            });
+            const maxVal = Math.max(...countsPerMonth.map(c => c.count), 10);
+
+            chartEl.innerHTML = countsPerMonth.map(item => {
+                const heightPct = Math.max(14, Math.round((item.count / maxVal) * 100));
+                const isNov = item.fullMonth === 'November';
+                return `
+                <div onclick="archiveNav={year:'2026',month:'${item.fullMonth}',category:null,subfolder:null}; navigateTo('archive');"
+                     title="${item.fullMonth} 2026: ${item.realFiles} file tersimpan"
+                     class="flex-1 flex flex-col items-center gap-1.5 cursor-pointer group">
+                    <span class="text-[10px] font-bold ${isNov ? 'text-navy-900' : 'text-slate-400'} group-hover:text-navy-900">${item.count}</span>
+                    <div class="w-full max-w-[28px] rounded-t-lg transition-all duration-300 ${isNov ? 'bg-gold-500 group-hover:bg-gold-400' : 'bg-navy-800/80 group-hover:bg-navy-900'}" style="height: ${heightPct}%"></div>
+                    <span class="text-[10px] font-bold ${isNov ? 'text-navy-900' : 'text-slate-500'}">${item.month}</span>
+                </div>`;
+            }).join('');
+
+            // Sentiment Bars
+            const sentTotal = Math.max(1, totalNews);
+            const sentData = [
+                { label: 'Sentimen Positif', count: posCount, pct: Math.round((posCount / sentTotal) * 100), color: 'bg-emerald-500' },
+                { label: 'Sentimen Netral', count: neuCount, pct: Math.round((neuCount / sentTotal) * 100), color: 'bg-sky-500' },
+                { label: 'Sentimen Negatif', count: negCount, pct: Math.round((negCount / sentTotal) * 100), color: 'bg-rose-500' }
+            ];
+            document.getElementById('sentiment-bars-container').innerHTML = sentData.map(s => `
+                <div>
+                    <div class="flex items-center justify-between text-xs font-bold mb-1">
+                        <span class="text-slate-700">${s.label}</span>
+                        <span class="text-navy-900">${s.count} Berita (${s.pct}%)</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div class="${s.color} h-2.5 rounded-full transition-all duration-500" style="width: ${s.pct}%"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Recent Files
+            const recentFilesEl = document.getElementById('dash-recent-files');
+            const topFiles = appState.files.slice(0, 4);
+            recentFilesEl.innerHTML = topFiles.length ? topFiles.map(f => `
+                <div class="py-3 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-xl bg-navy-900/10 text-navy-800 flex items-center justify-center shrink-0">
+                            <i data-lucide="${getFileIconName(f.category)}" class="w-4 h-4"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold text-navy-900 truncate">${f.name}</p>
+                            <p class="text-[11px] text-slate-500 truncate">${f.month} ${f.year} &bull; ${f.mainCategory}</p>
+                        </div>
+                    </div>
+                    <span class="text-[11px] font-semibold text-slate-400 shrink-0">${f.date}</span>
+                </div>
+            `).join('') : '<p class="text-xs text-slate-400 py-4">Belum ada file terunggah.</p>';
+
+            // Recent News
+            const recentNewsEl = document.getElementById('dash-recent-news');
+            const topNews = appState.monitoring.slice(0, 4);
+            recentNewsEl.innerHTML = topNews.map(n => `
+                <div class="py-3 flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-navy-900 truncate">${n.title}</p>
+                        <p class="text-[11px] text-slate-500 truncate">${n.source} &bull; ${formatDateIndo(n.date)}</p>
+                    </div>
+                    ${getSentimentBadge(n.sentiment)}
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // =========================================================================
+        // 6. DIGITAL ARCHIVE EXPLORER (YEAR -> MONTH -> 7 CATEGORIES -> SUBFOLDER)
+        // =========================================================================
+        function getCurrentPathKey() {
+            const parts = [];
+            if (archiveNav.year) parts.push(archiveNav.year);
+            if (archiveNav.month) parts.push(archiveNav.month);
+            if (archiveNav.category) parts.push(archiveNav.category);
+            if (archiveNav.subfolder) parts.push(archiveNav.subfolder);
+            return parts.length ? parts.join('|') : 'ROOT';
+        }
+
+        function getCurrentDriveUrl() {
+            const key = getCurrentPathKey();
+            if (appState.driveLinks[key]) return appState.driveLinks[key];
+            if (archiveNav.category) {
+                const catObj = DEFAULT_CATEGORIES.find(c => c.name === archiveNav.category);
+                if (catObj && catObj.driveUrl) return catObj.driveUrl;
+            }
+            if (appState.currentUser && appState.currentUser.driveUrl) {
+                return appState.currentUser.driveUrl;
+            }
+            return appState.driveLinks['ROOT'];
+        }
+
+        function openRootGoogleDrive() {
+            const url = (appState.currentUser && appState.currentUser.driveUrl) || appState.driveLinks['ROOT'];
+            window.open(url, '_blank', 'noopener,noreferrer');
+        }
+
+        function openCurrentFolderInDrive() {
+            const url = getCurrentDriveUrl();
+            window.open(url, '_blank', 'noopener,noreferrer');
+            showToast('Membuka folder Google Drive pada tab baru...');
+        }
+
+        function openDriveLinkConfigModal() {
+            document.getElementById('config-drive-url-input').value = getCurrentDriveUrl();
+            openModal('drivelink-modal');
+        }
+
+        function handleSaveDriveLinkSubmit(e) {
+            e.preventDefault();
+            const url = document.getElementById('config-drive-url-input').value.trim();
+            if (!url) return;
+            const key = getCurrentPathKey();
+            appState.driveLinks[key] = url;
+            saveAppState();
+            closeModal('drivelink-modal');
+            renderArchiveExplorer();
+            showToast('Tautan folder Google Drive berhasil diperbarui!');
+        }
+
+        function renderArchiveBreadcrumb() {
+            const bcEl = document.getElementById('archive-breadcrumb');
+            let html = `
+                <button onclick="archiveNav={year:null,month:null,category:null,subfolder:null}; renderArchiveExplorer();"
+                    class="px-2.5 py-1 rounded-lg hover:bg-slate-100 text-navy-900 font-extrabold flex items-center gap-1.5">
+                    <i data-lucide="hard-drive" class="w-4 h-4 text-navy-700"></i>
+                    <span>DIGITAL ARCHIVE</span>
+                </button>`;
+
+            if (archiveNav.year) {
+                html += `<i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                <button onclick="archiveNav.month=null; archiveNav.category=null; archiveNav.subfolder=null; renderArchiveExplorer();"
+                    class="px-2.5 py-1 rounded-lg hover:bg-slate-100 text-navy-800 font-bold">${archiveNav.year}</button>`;
+            }
+            if (archiveNav.month) {
+                html += `<i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                <button onclick="archiveNav.category=null; archiveNav.subfolder=null; renderArchiveExplorer();"
+                    class="px-2.5 py-1 rounded-lg hover:bg-slate-100 text-navy-800 font-bold">${archiveNav.month}</button>`;
+            }
+            if (archiveNav.category) {
+                html += `<i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                <button onclick="archiveNav.subfolder=null; renderArchiveExplorer();"
+                    class="px-2.5 py-1 rounded-lg hover:bg-slate-100 text-navy-800 font-bold">${archiveNav.category}</button>`;
+            }
+            if (archiveNav.subfolder) {
+                html += `<i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                <span class="px-2.5 py-1 rounded-lg bg-navy-900 text-white font-bold text-xs">${archiveNav.subfolder}</span>`;
+            }
+
+            bcEl.innerHTML = html;
+            document.getElementById('current-drive-url-badge').textContent = getCurrentDriveUrl().replace('https://', '');
+        }
+
+        function getSubfoldersForCategory(year, month, categoryName) {
+            const catObj = DEFAULT_CATEGORIES.find(c => c.name === categoryName);
+            const base = catObj ? [...catObj.subfolders] : [];
+            const customKey = `${year}|${month}|${categoryName}`;
+            const extras = appState.customSubfolders[customKey] || [];
+            return [...base, ...extras];
+        }
+
+        function renderArchiveExplorer() {
+            renderArchiveBreadcrumb();
+            const container = document.getElementById('archive-explorer-body');
+            const query = (document.getElementById('archive-search-input').value || '').trim().toLowerCase();
+            const typeFilter = document.getElementById('archive-type-filter').value;
+            const ownerEmail = appState.currentUser ? appState.currentUser.email : 'humas@imigrasi.go.id';
+
+            // Update button label for creating Year vs Subfolder
+            const addFolderBtn = document.getElementById('btn-add-subfolder');
+            if (!archiveNav.year) {
+                addFolderBtn.innerHTML = `<i data-lucide="folder-plus" class="w-4 h-4 text-gold-400"></i><span>+ Tambah Tahun</span>`;
+            } else if (archiveNav.category && !archiveNav.subfolder) {
+                addFolderBtn.innerHTML = `<i data-lucide="folder-plus" class="w-4 h-4 text-gold-400"></i><span>+ Subfolder Baru</span>`;
+            } else {
+                addFolderBtn.innerHTML = `<i data-lucide="folder-plus" class="w-4 h-4 text-gold-400"></i><span>+ Folder Baru</span>`;
+            }
+
+            let foldersHTML = '';
+
+            // LEVEL 0: YEARS (2025, 2026, 2027...)
+            if (!archiveNav.year) {
+                const filteredYears = appState.years.filter(y => y.toLowerCase().includes(query));
+                foldersHTML = renderDriveFolderTable(
+                    filteredYears.map(y => {
+                        const fileCount = appState.files.filter(f => f.year === y).length;
+                        return {
+                            name: y,
+                            meta: `${fileCount} Dokumen Terarsip`,
+                            owner: ownerEmail,
+                            modified: '12 Nov 2026',
+                            onClick: `archiveNav.year='${y}'; renderArchiveExplorer();`
+                        };
+                    }),
+                    'Direktori Tahun Arsip'
+                );
+            }
+            // LEVEL 1: MONTHS (Januari - Desember)
+            else if (!archiveNav.month) {
+                const filteredMonths = MONTHS_LIST.filter(m => m.toLowerCase().includes(query));
+                foldersHTML = renderDriveFolderTable(
+                    filteredMonths.map(m => {
+                        const fileCount = appState.files.filter(f => f.year === archiveNav.year && f.month === m).length;
+                        return {
+                            name: m,
+                            meta: `7 Kategori Utama • ${fileCount} File`,
+                            owner: ownerEmail,
+                            modified: '03 Nov 2026',
+                            onClick: `archiveNav.month='${m}'; renderArchiveExplorer();`
+                        };
+                    }),
+                    `Folder Bulan — Tahun ${archiveNav.year}`
+                );
+            }
+            // LEVEL 2: 7 MAIN CATEGORIES (Matching Reference Image)
+            else if (!archiveNav.category) {
+                const filteredCats = DEFAULT_CATEGORIES.filter(c => c.name.toLowerCase().includes(query));
+                foldersHTML = renderDriveFolderTable(
+                    filteredCats.map(cat => {
+                        const subs = getSubfoldersForCategory(archiveNav.year, archiveNav.month, cat.name);
+                        const fileCount = appState.files.filter(f => f.year === archiveNav.year && f.month === archiveNav.month && f.mainCategory === cat.name).length;
+                        return {
+                            name: cat.name,
+                            meta: `${subs.length} Subfolder • ${fileCount} File`,
+                            owner: ownerEmail,
+                            modified: '03 Nov 2026',
+                            onClick: `archiveNav.category='${cat.name}'; renderArchiveExplorer();`
+                        };
+                    }),
+                    `Kategori Arsip — ${archiveNav.month} ${archiveNav.year}`
+                );
+            }
+            // LEVEL 3: SUBFOLDERS INSIDE CATEGORY (Matching Reference Image)
+            else if (!archiveNav.subfolder) {
+                const subs = getSubfoldersForCategory(archiveNav.year, archiveNav.month, archiveNav.category)
+                    .filter(s => s.toLowerCase().includes(query));
+                foldersHTML = renderDriveFolderTable(
+                    subs.map(sub => {
+                        const fileCount = appState.files.filter(f =>
+                            f.year === archiveNav.year &&
+                            f.month === archiveNav.month &&
+                            f.mainCategory === archiveNav.category &&
+                            f.subfolder === sub
+                        ).length;
+                        return {
+                            name: sub,
+                            meta: `${fileCount} File Tersimpan`,
+                            owner: ownerEmail,
+                            modified: '03 Nov 2026',
+                            onClick: `archiveNav.subfolder='${sub.replace(/'/g, "\\'")}'; renderArchiveExplorer();`
+                        };
+                    }),
+                    `Subfolder — ${archiveNav.category}`
+                );
+            }
+
+            // FILES LISTING FOR CURRENT CONTEXT
+            const matchingFiles = appState.files.filter(f => {
+                if (archiveNav.year && f.year !== archiveNav.year) return false;
+                if (archiveNav.month && f.month !== archiveNav.month) return false;
+                if (archiveNav.category && f.mainCategory !== archiveNav.category) return false;
+                if (archiveNav.subfolder && f.subfolder !== archiveNav.subfolder) return false;
+                if (typeFilter !== 'all' && f.category !== typeFilter) return false;
+                if (query && !f.name.toLowerCase().includes(query) && !(f.note || '').toLowerCase().includes(query)) return false;
+                return true;
+            });
+
+            const filesHTML = renderDriveFilesTable(matchingFiles);
+
+            container.innerHTML = foldersHTML + filesHTML;
+            lucide.createIcons();
+        }
+
+        function renderDriveFolderTable(items, sectionTitle) {
+            if (!items || items.length === 0) return '';
+            return `
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-navy-900">${sectionTitle}</span>
+                    <span class="text-xs font-semibold text-slate-500">${items.length} Folder</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                <th class="py-3 px-5">Nama Folder</th>
+                                <th class="py-3 px-4 hidden sm:table-cell">Pemilik Akun Drive</th>
+                                <th class="py-3 px-4 hidden md:table-cell">Tanggal Diubah</th>
+                                <th class="py-3 px-4 hidden lg:table-cell">Keterangan</th>
+                                <th class="py-3 px-5 text-right">Drive</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 text-sm">
+                            ${items.map(item => `
+                            <tr onclick="${item.onClick}" class="hover:bg-navy-900/[0.03] cursor-pointer transition group">
+                                <td class="py-3.5 px-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-xl bg-navy-900 text-gold-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition">
+                                            <i data-lucide="folder" class="w-4 h-4 fill-current"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-navy-950 group-hover:text-navy-700 transition">${item.name}</p>
+                                            <p class="text-[11px] text-slate-500 sm:hidden">${item.meta}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3.5 px-4 hidden sm:table-cell">
+                                    <div class="flex items-center gap-2 text-xs text-slate-600">
+                                        <span class="w-5 h-5 rounded-full bg-navy-800 text-white text-[10px] font-bold flex items-center justify-center">G</span>
+                                        <span class="truncate max-w-[180px]">${item.owner}</span>
+                                    </div>
+                                </td>
+                                <td class="py-3.5 px-4 hidden md:table-cell text-xs text-slate-500">${item.modified}</td>
+                                <td class="py-3.5 px-4 hidden lg:table-cell text-xs font-medium text-slate-600">${item.meta}</td>
+                                <td class="py-3.5 px-5 text-right" onclick="event.stopPropagation()">
+                                    <button onclick="openCurrentFolderInDrive()" title="Buka di Google Drive" class="p-2 rounded-lg hover:bg-slate-200/70 text-slate-500 hover:text-navy-900 transition">
+                                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                                    </button>
+                                </td>
+                            </tr>`).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>`;
+        }
+
+        function renderDriveFilesTable(files) {
+            return `
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+                <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-navy-900">Dokumen & File Terunggah</span>
+                        <span class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-navy-900 text-white">${files.length} File</span>
+                    </div>
+                    <button onclick="openUploadFileModal()" class="text-xs font-bold text-navy-800 hover:underline">+ Unggah File Baru</button>
+                </div>
+                ${files.length === 0 ? `
+                    <div class="p-10 text-center">
+                        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3">
+                            <i data-lucide="folder-open" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-sm font-bold text-slate-700">Belum ada file di lokasi folder ini</p>
+                        <p class="text-xs text-slate-500 mt-1">Klik tombol <strong>"+ Unggah File ke Folder Ini"</strong> untuk memasukkan dokumen, foto, atau video ke Google Drive.</p>
+                    </div>
+                ` : `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                    <th class="py-3 px-5">Nama File</th>
+                                    <th class="py-3 px-4 hidden md:table-cell">Lokasi Subfolder</th>
+                                    <th class="py-3 px-4 hidden sm:table-cell">Pengunggah</th>
+                                    <th class="py-3 px-4 hidden lg:table-cell">Ukuran</th>
+                                    <th class="py-3 px-4">Status Drive</th>
+                                    <th class="py-3 px-5 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                ${files.map(f => `
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="py-3.5 px-5">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-xl ${getFileBadgeColor(f.category)} flex items-center justify-center shrink-0">
+                                                <i data-lucide="${getFileIconName(f.category)}" class="w-4 h-4"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="font-bold text-navy-900 truncate max-w-[240px] sm:max-w-xs">${f.name}</p>
+                                                <p class="text-[11px] text-slate-500 truncate max-w-[240px]">${f.note || 'Arsip Humas Kanwil Papua'} &bull; ${f.date}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-3.5 px-4 hidden md:table-cell text-xs text-slate-600">
+                                        <span class="font-semibold text-navy-800">${f.subfolder || f.mainCategory}</span>
+                                        <span class="block text-[10px] text-slate-400">${f.month} ${f.year}</span>
+                                    </td>
+                                    <td class="py-3.5 px-4 hidden sm:table-cell text-xs text-slate-600 truncate max-w-[160px]">${f.owner}</td>
+                                    <td class="py-3.5 px-4 hidden lg:table-cell text-xs font-medium text-slate-500">${f.size}</td>
+                                    <td class="py-3.5 px-4">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <i data-lucide="check" class="w-3 h-3"></i> Tersinkron
+                                        </span>
+                                    </td>
+                                    <td class="py-3.5 px-5 text-right">
+                                        <div class="inline-flex items-center gap-1">
+                                            <a href="${f.driveUrl || getCurrentDriveUrl()}" target="_blank" rel="noopener noreferrer" title="Buka di Google Drive"
+                                               class="p-2 rounded-lg hover:bg-navy-900/10 text-navy-800 transition">
+                                                <i data-lucide="external-link" class="w-4 h-4"></i>
+                                            </a>
+                                            <button onclick="copyTextToClipboard('${f.driveUrl || getCurrentDriveUrl()}')" title="Salin Tautan Drive"
+                                               class="p-2 rounded-lg hover:bg-slate-200 text-slate-600 transition">
+                                                <i data-lucide="link-2" class="w-4 h-4"></i>
+                                            </button>
+                                            <button onclick="deleteArchivedFile('${f.id}')" title="Hapus File"
+                                               class="p-2 rounded-lg hover:bg-rose-100 text-rose-600 transition">
+                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `}
+            </div>`;
+        }
+
+        function getFileIconName(cat) {
+            if (cat === 'image') return 'image';
+            if (cat === 'video') return 'video';
+            if (cat === 'design') return 'palette';
+            return 'file-text';
+        }
+
+        function getFileBadgeColor(cat) {
+            if (cat === 'image') return 'bg-sky-100 text-sky-700';
+            if (cat === 'video') return 'bg-purple-100 text-purple-700';
+            if (cat === 'design') return 'bg-amber-100 text-amber-700';
+            return 'bg-navy-900/10 text-navy-800';
+        }
+
+        // Upload File Modal Handlers
+        function openUploadFileModal() {
+            const pathParts = [
+                'DIGITAL ARCHIVE',
+                archiveNav.year || '2026',
+                archiveNav.month || 'November',
+                archiveNav.category || '02. Dokumentasi Kegiatan',
+                archiveNav.subfolder || 'Kegiatan Internal Kantor'
+            ];
+            document.getElementById('upload-target-path').textContent = pathParts.join(' > ');
+            document.getElementById('upload-file-url').value = getCurrentDriveUrl();
+            openModal('upload-modal');
+        }
+
+        function onLocalFileSelected(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            document.getElementById('upload-file-label').textContent = `File terpilih: ${file.name}`;
+            document.getElementById('upload-file-name').value = file.name;
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            document.getElementById('upload-file-size').value = sizeMB > 0.01 ? `${sizeMB} MB` : `${Math.max(1, Math.round(file.size / 1024))} KB`;
+
+            const ext = file.name.split('.').pop().toLowerCase();
+            const catSelect = document.getElementById('upload-file-category');
+            if (['jpg', 'jpeg', 'png', 'webp'].includes(ext)) catSelect.value = 'image';
+            else if (['mp4', 'mov', 'avi', 'mkv'].includes(ext)) catSelect.value = 'video';
+            else if (['psd', 'ai', 'cdr', 'fig', 'svg'].includes(ext)) catSelect.value = 'design';
+            else catSelect.value = 'document';
+        }
+
+        function handleUploadFileSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('upload-file-name').value.trim();
+            const category = document.getElementById('upload-file-category').value;
+            const size = document.getElementById('upload-file-size').value.trim() || '1.2 MB';
+            const driveUrl = document.getElementById('upload-file-url').value.trim() || getCurrentDriveUrl();
+            const note = document.getElementById('upload-file-note').value.trim();
+
+            const targetYear = archiveNav.year || '2026';
+            const targetMonth = archiveNav.month || 'November';
+            const targetCategory = archiveNav.category || '02. Dokumentasi Kegiatan';
+            const targetSubfolder = archiveNav.subfolder || getSubfoldersForCategory(targetYear, targetMonth, targetCategory)[0];
+
+            const newFile = {
+                id: 'file-' + Date.now(),
+                name,
+                category,
+                size,
+                year: targetYear,
+                month: targetMonth,
+                mainCategory: targetCategory,
+                subfolder: targetSubfolder,
+                owner: appState.currentUser ? appState.currentUser.email : 'humas@imigrasi.go.id',
+                date: '12 Nov 2026',
+                driveUrl,
+                note
+            };
+
+            appState.files.unshift(newFile);
+            saveAppState();
+            closeModal('upload-modal');
+            e.target.reset();
+            document.getElementById('upload-file-label').textContent = 'Klik untuk memilih file (Foto, Video, PDF, Dokumen, Desain)';
+            renderArchiveExplorer();
+            showToast(`File "${name}" berhasil diunggah & disinkronkan ke Google Drive!`);
+        }
+
+        function deleteArchivedFile(fileId) {
+            const target = appState.files.find(f => f.id === fileId);
+            if (!target) return;
+            showConfirmDialog({
+                title: 'Hapus Dokumen Arsip?',
+                message: `Apakah Anda yakin ingin menghapus "${target.name}" dari daftar arsip folder ini?`,
+                okText: 'Hapus File',
+                danger: true,
+                onConfirm: () => {
+                    appState.files = appState.files.filter(f => f.id !== fileId);
+                    saveAppState();
+                    renderArchiveExplorer();
+                    showToast('Dokumen berhasil dihapus dari arsip.', 'info');
+                }
+            });
+        }
+
+        // Create New Subfolder or Year
+        function openNewSubfolderModal() {
+            const titleEl = document.getElementById('subfolder-modal-title');
+            const labelEl = document.getElementById('subfolder-name-label');
+            const inputEl = document.getElementById('new-folder-name');
+
+            if (!archiveNav.year) {
+                titleEl.textContent = 'Tambah Direktori Tahun Baru';
+                labelEl.textContent = 'Tahun Arsip (Contoh: 2028)';
+                inputEl.placeholder = '2028';
+            } else {
+                titleEl.textContent = 'Tambah Subfolder Google Drive Baru';
+                labelEl.textContent = 'Nama Subfolder Baru';
+                inputEl.placeholder = 'Contoh: Dokumentasi Khusus Kunjungan';
+            }
+            openModal('subfolder-modal');
+        }
+
+        function handleCreateFolderSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-folder-name').value.trim();
+            const driveUrl = document.getElementById('new-folder-drive-url').value.trim();
+            if (!name) return;
+
+            if (!archiveNav.year) {
+                if (!appState.years.includes(name)) {
+                    appState.years.push(name);
+                    appState.years.sort();
+                }
+                if (driveUrl) appState.driveLinks[name] = driveUrl;
+            } else {
+                const targetYear = archiveNav.year || '2026';
+                const targetMonth = archiveNav.month || 'November';
+                const targetCat = archiveNav.category || '02. Dokumentasi Kegiatan';
+                const key = `${targetYear}|${targetMonth}|${targetCat}`;
+                if (!appState.customSubfolders[key]) appState.customSubfolders[key] = [];
+                if (!appState.customSubfolders[key].includes(name)) {
+                    appState.customSubfolders[key].push(name);
+                }
+                if (driveUrl) appState.driveLinks[`${key}|${name}`] = driveUrl;
+                archiveNav.year = targetYear;
+                archiveNav.month = targetMonth;
+                archiveNav.category = targetCat;
+            }
+
+            saveAppState();
+            closeModal('subfolder-modal');
+            e.target.reset();
+            renderArchiveExplorer();
+            showToast(`Folder "${name}" berhasil dibuat & siap digunakan!`);
+        }
+
+        function copyTextToClipboard(text) {
+            const temp = document.createElement('textarea');
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            try {
+                document.execCommand('copy');
+                showToast('Tautan Google Drive berhasil disalin ke clipboard!');
+            } catch (err) {
+                showToast('Gagal menyalin tautan.', 'error');
+            }
+            document.body.removeChild(temp);
+        }
+
+        // =========================================================================
+        // 7. MEDIA MONITORING MODULE
+        // =========================================================================
+        function renderMediaMonitoring() {
+            const query = (document.getElementById('monitoring-search').value || '').trim().toLowerCase();
+            const sentFilter = document.getElementById('monitoring-sentiment-filter').value;
+            const followFilter = document.getElementById('monitoring-followup-filter').value;
+
+            const filtered = appState.monitoring.filter(item => {
+                if (sentFilter !== 'all' && item.sentiment !== sentFilter) return false;
+                if (followFilter !== 'all' && item.followup !== followFilter) return false;
+                if (query) {
+                    const hay = `${item.title} ${item.source} ${item.summary || ''}`.toLowerCase();
+                    if (!hay.includes(query)) return false;
+                }
+                return true;
+            });
+
+            const tbody = document.getElementById('monitoring-table-body');
+            document.getElementById('monitoring-count-label').textContent = `Menampilkan ${filtered.length} dari ${appState.monitoring.length} pemberitaan`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-10 text-center text-slate-400 text-sm">
+                            Tidak ditemukan data pemberitaan yang sesuai filter pencarian.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="py-4 px-4">
+                        <p class="font-bold text-navy-950">${item.title}</p>
+                        ${item.summary ? `<p class="text-xs text-slate-500 mt-0.5 line-clamp-1">${item.summary}</p>` : ''}
+                    </td>
+                    <td class="py-4 px-4 text-slate-700 font-medium">${item.source}</td>
+                    <td class="py-4 px-4 text-slate-600 whitespace-nowrap">${formatDateIndo(item.date)}</td>
+                    <td class="py-4 px-4">${getSentimentBadge(item.sentiment)}</td>
+                    <td class="py-4 px-4">
+                        <select onchange="updateMonitoringFollowup('${item.id}', this.value)" class="px-2.5 py-1 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 bg-white">
+                            <option value="Pemantauan" ${item.followup === 'Pemantauan' ? 'selected' : ''}>Pemantauan</option>
+                            <option value="Arsip berita" ${item.followup === 'Arsip berita' ? 'selected' : ''}>Arsip berita</option>
+                            <option value="Koordinasi internal" ${item.followup === 'Koordinasi internal' ? 'selected' : ''}>Koordinasi internal</option>
+                            <option value="Klarifikasi / Hak Jawab" ${item.followup === 'Klarifikasi / Hak Jawab' ? 'selected' : ''}>Klarifikasi / Hak Jawab</option>
+                        </select>
+                    </td>
+                    <td class="py-4 px-4 text-right whitespace-nowrap">
+                        <div class="inline-flex items-center gap-1">
+                            ${item.url ? `<a href="${item.url}" target="_blank" rel="noopener noreferrer" title="Buka Tautan Berita" class="p-2 rounded-lg hover:bg-navy-900/10 text-navy-800"><i data-lucide="external-link" class="w-4 h-4"></i></a>` : ''}
+                            <button onclick="deleteMonitoringItem('${item.id}')" title="Hapus Data" class="p-2 rounded-lg hover:bg-rose-100 text-rose-600">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function getSentimentBadge(sentiment) {
+            if (sentiment === 'Positif') {
+                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">Positif</span>`;
+            }
+            if (sentiment === 'Negatif') {
+                return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800">Negatif</span>`;
+            }
+            return `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-200 text-slate-700">Netral</span>`;
+        }
+
+        function openMonitoringModal() {
+            openModal('monitoring-modal');
+        }
+
+        function handleSaveMonitoringSubmit(e) {
+            e.preventDefault();
+            const newItem = {
+                id: 'mon-' + Date.now(),
+                title: document.getElementById('mon-title').value.trim(),
+                source: document.getElementById('mon-source').value.trim(),
+                date: document.getElementById('mon-date').value,
+                sentiment: document.getElementById('mon-sentiment').value,
+                followup: document.getElementById('mon-followup').value,
+                url: document.getElementById('mon-url').value.trim(),
+                summary: document.getElementById('mon-summary').value.trim()
+            };
+            appState.monitoring.unshift(newItem);
+            saveAppState();
+            closeModal('monitoring-modal');
+            e.target.reset();
+            document.getElementById('mon-date').value = '2026-11-12';
+            renderMediaMonitoring();
+            showToast('Data pemberitaan berhasil dicatat ke Media Monitoring!');
+        }
+
+        function updateMonitoringFollowup(id, newStatus) {
+            const item = appState.monitoring.find(m => m.id === id);
+            if (item) {
+                item.followup = newStatus;
+                saveAppState();
+                showToast(`Status tindak lanjut diperbarui menjadi "${newStatus}".`, 'info');
+            }
+        }
+
+        function deleteMonitoringItem(id) {
+            showConfirmDialog({
+                title: 'Hapus Catatan Pemberitaan?',
+                message: 'Data pemberitaan ini akan dihapus dari log Media Monitoring.',
+                okText: 'Hapus',
+                danger: true,
+                onConfirm: () => {
+                    appState.monitoring = appState.monitoring.filter(m => m.id !== id);
+                    saveAppState();
+                    renderMediaMonitoring();
+                    showToast('Catatan pemberitaan telah dihapus.', 'info');
+                }
+            });
+        }
+
+        function exportMonitoringCSV() {
+            const headers = ['Judul/Isu', 'Sumber Media', 'Tanggal', 'Sentimen', 'Tindak Lanjut', 'Ringkasan'];
+            const rows = appState.monitoring.map(m => [
+                `"${m.title.replace(/"/g, '""')}"`,
+                `"${m.source.replace(/"/g, '""')}"`,
+                m.date,
+                m.sentiment,
+                `"${m.followup}"`,
+                `"${(m.summary || '').replace(/"/g, '""')}"`
+            ]);
+            const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'Laporan_Media_Monitoring_Imigrasi_Papua.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('Laporan Media Monitoring berhasil diunduh (CSV).');
+        }
+
+        function formatDateIndo(isoStr) {
+            if (!isoStr) return '-';
+            const parts = isoStr.split('-');
+            if (parts.length !== 3) return isoStr;
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+
+        // =========================================================================
+        // 8. KALENDER PUBLIKASI & GENERATOR SIARAN PERS
+        // =========================================================================
+        function renderAgendas() {
+            const container = document.getElementById('agenda-list-container');
+            container.innerHTML = appState.agendas.map(ag => `
+                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:shadow-md transition flex flex-col justify-between gap-4">
+                    <div>
+                        <div class="flex items-center justify-between gap-2 mb-2">
+                            <span class="px-2.5 py-1 rounded-lg bg-navy-900 text-gold-400 text-[11px] font-bold">${formatDateIndo(ag.date)}</span>
+                            <span class="text-[11px] font-bold text-navy-700 bg-navy-900/10 px-2.5 py-0.5 rounded-full">${ag.channel}</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-navy-950 leading-snug">${ag.title}</h4>
+                    </div>
+                    <div class="pt-3 border-t border-slate-200/70 flex items-center justify-between text-xs text-slate-500">
+                        <span>PIC: <strong class="text-slate-700">${ag.pic}</strong></span>
+                        <button onclick="deleteAgenda('${ag.id}')" class="text-rose-600 hover:underline font-semibold">Hapus</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAgendaModal() {
+            openModal('agenda-modal');
+        }
+
+        function handleSaveAgendaSubmit(e) {
+            e.preventDefault();
+            appState.agendas.unshift({
+                id: 'ag-' + Date.now(),
+                title: document.getElementById('ag-title').value.trim(),
+                date: document.getElementById('ag-date').value,
+                channel: document.getElementById('ag-channel').value,
+                pic: document.getElementById('ag-pic').value.trim() || 'Tim Humas Kanwil Papua'
+            });
+            saveAppState();
+            closeModal('agenda-modal');
+            e.target.reset();
+            renderAgendas();
+            showToast('Jadwal publikasi humas berhasil ditambahkan!');
+        }
+
+        function deleteAgenda(id) {
+            appState.agendas = appState.agendas.filter(a => a.id !== id);
+            saveAppState();
+            renderAgendas();
+            showToast('Agenda publikasi dihapus.', 'info');
+        }
+
+        // Press Release Generator
+        function updatePressPreview() {
+            const num = document.getElementById('pr-number').value.trim() || 'IMI.26-HM.01.02-114';
+            const title = document.getElementById('pr-title').value.trim() || 'Kanwil Ditjen Imigrasi Papua Tingkatkan Pelayanan & Pengawasan Keimigrasian';
+            const locdate = document.getElementById('pr-locdate').value.trim() || 'Jayapura, 12 November 2026';
+            const speaker = document.getElementById('pr-speaker').value.trim() || 'Kepala Kantor Wilayah Ditjen Imigrasi Papua';
+            const body = document.getElementById('pr-body').value.trim() ||
+                `Kantor Wilayah Direktorat Jenderal Imigrasi Papua terus berkomitmen menghadirkan pelayanan keimigrasian yang prima, transparan, dan akuntabel bagi masyarakat di Tanah Papua. Menurut ${speaker}, sinergi kehumasan dan keterbukaan informasi publik menjadi kunci utama dalam membangun kepercayaan masyarakat.`;
+
+            document.getElementById('prev-pr-number').textContent = `Nomor: ${num}`;
+            document.getElementById('prev-pr-title').textContent = title;
+            document.getElementById('prev-pr-content').innerHTML = `<strong>${locdate}</strong> — ${body}`;
+        }
+
+        function copyPressRelease() {
+            const num = document.getElementById('prev-pr-number').textContent;
+            const title = document.getElementById('prev-pr-title').textContent;
+            const content = document.getElementById('prev-pr-content').textContent;
+            copyTextToClipboard(`SIARAN PERS\n${num}\n\n${title}\n\n${content}`);
+        }
+
+        function archivePressReleaseToDrive() {
+            const title = document.getElementById('pr-title').value.trim() || 'Siaran_Pers_Kanwil_Imigrasi_Papua';
+            const safeName = title.replace(/[^a-zA-Z0-9\s]/g, '').trim().replace(/\s+/g, '_').slice(0, 48) + '.pdf';
+            appState.files.unshift({
+                id: 'file-' + Date.now(),
+                name: safeName,
+                category: 'document',
+                size: '840 KB',
+                year: '2026',
+                month: 'November',
+                mainCategory: '06. PRESS RELEASE DAN MEDIA',
+                subfolder: 'Siaran Pers Resmi',
+                owner: appState.currentUser ? appState.currentUser.email : 'humas@imigrasi.go.id',
+                date: '12 Nov 2026',
+                driveUrl: DEFAULT_CATEGORIES[5].driveUrl,
+                note: 'Siaran pers dibuat melalui Generator Siaran Pers Humas Digital Hub'
+            });
+            saveAppState();
+            showToast(`Draf Siaran Pers "${safeName}" berhasil diarsipkan ke folder 06. PRESS RELEASE DAN MEDIA!`);
+        }
+    </script>
+</body>
+</html>
